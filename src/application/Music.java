@@ -1,6 +1,6 @@
 package application;
 
-public class Music
+public class Music extends MediaFiles
 {
 
 }

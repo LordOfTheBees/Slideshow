@@ -34,6 +34,7 @@ public class Controller
 		 {
 			    @Override public void handle(ActionEvent e)
 			    {
+			    	System.out.println("Button clicked");
 			    	FileChooser fileChooser = new FileChooser();
 	            	fileChooser.setTitle("Open Resource File");
 
@@ -111,18 +112,7 @@ public class Controller
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
-	    			if(fromText.getText().isEmpty() && toText.getText().isEmpty())
-	            	{
-	            		Toolkit.getDefaultToolkit().beep();
-	            	}
-	            	else
-	            	{
-	            		fromText.clear();
-	            		toText.clear();
-	            		String from = fromText.getText();
-	            		String to = toText.getText();
 
-	            	}
 	            }
 	        }
 	        );
@@ -138,10 +128,24 @@ public class Controller
 	        );
 		 setTime.setOnMousePressed(new EventHandler<MouseEvent>()
 	        {
+
+
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
+	    			System.out.println("Button clicked");
+	    			if(fromText.getText().isEmpty() && toText.getText().isEmpty())
+	            	{
+	            		Toolkit.getDefaultToolkit().beep();
+	            	}
+	            	else
+	            	{
+	            		fromText.clear();
+	            		toText.clear();
+	            		String from = fromText.getText();
+	            		String to = toText.getText();
 
+	            	}
 	            }
 	        }
 	        );

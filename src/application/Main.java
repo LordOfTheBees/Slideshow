@@ -21,6 +21,7 @@ public class Main extends Application
 			this.primaryStage = primaryStage;
 	        this.primaryStage.setTitle("Slideshow");
 	        initRootLayout();
+	    
 		}
 		catch(Exception e)
 		{
@@ -39,7 +40,7 @@ public class Main extends Application
 
             primaryStage.setScene(scene);
             primaryStage.show();
-
+            
         }
         catch (IOException e)
         {
