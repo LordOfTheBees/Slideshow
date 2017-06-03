@@ -13,10 +13,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -26,15 +29,48 @@ public class Controller
 	 @FXML private HBox musicBox, videoAndPictureBox;
 	 @FXML private TextField fromText, toText;
 	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
+	 @FXML private Pane videoPane, picturePane;
+	 @FXML private ImageView pictureThumbNail, videoThumbNail;
+	 @FXML private Hyperlink importPicture;
+	 @FXML private Hyperlink importVideo;
+	 @FXML private Hyperlink importAudio;
+
+	 Music music = new Music();
+	 Video video = new Video();
+	 Picture pic = new Picture();
+
 	 @FXML
 	    public void initialize()
 	    {
+		 importPicture.setOnAction(new EventHandler<ActionEvent>()
+		 {
+			    @Override
+			    public void handle(ActionEvent e)
+			    {
+			    	pic.loadFile();
+			    }
+		});
+		 importAudio.setOnAction(new EventHandler<ActionEvent>()
+		 {
+			    @Override
+			    public void handle(ActionEvent e)
+			    {
 
+			    	music.loadFile();
+			    }
+		});
+		 importVideo.setOnAction(new EventHandler<ActionEvent>()
+		 {
+			    @Override
+			    public void handle(ActionEvent e)
+			    {
+			    	video.loadFile();
+			    }
+		});
 		 openProject.setOnAction(new EventHandler<ActionEvent>()
 		 {
 			    @Override public void handle(ActionEvent e)
 			    {
-			    	System.out.println("Button clicked");
 			    	FileChooser fileChooser = new FileChooser();
 	            	fileChooser.setTitle("Open Resource File");
 

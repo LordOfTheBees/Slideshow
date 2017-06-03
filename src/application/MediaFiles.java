@@ -1,9 +1,8 @@
 package application;
 
-public class MediaFiles
+abstract class MediaFiles
 {
-	public void newFile()
-	{
-
-	}
+	abstract void loadFile();
+	//TODO: сделать метод для времени показа
+	//TODO: Сделать методы для распихивания загруженного
 }

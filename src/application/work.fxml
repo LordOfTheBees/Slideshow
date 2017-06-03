@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<AnchorPane prefHeight="682.0" prefWidth="909.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
       <MenuBar layoutX="101.0" layoutY="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -39,9 +39,9 @@
           </Menu>
         </menus>
       </MenuBar>
-      <HBox layoutY="32.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+      <Pane layoutY="10.0" prefHeight="662.0" prefWidth="909.0">
          <children>
-            <VBox prefHeight="368.0" prefWidth="338.0">
+            <VBox layoutY="396.0" prefHeight="274.0" prefWidth="909.0">
                <children>
                   <HBox fx:id="videoAndPictureBox" prefHeight="120.0" prefWidth="200.0">
                      <children>
@@ -50,6 +50,7 @@
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
                                  <children>
                                     <Label layoutX="23.0" layoutY="20.0" text="Video" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                                    <ImageView fx:id="pictureThumbNail" fitHeight="60.0" fitWidth="60.0" layoutX="-4.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </AnchorPane>
                               <AnchorPane prefHeight="200.0" prefWidth="200.0">
@@ -66,11 +67,7 @@
                                     <ImageView fx:id="videoThumbNail" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </Pane>
-                              <Pane fx:id="picturePane" prefHeight="60.0" prefWidth="60.0">
-                                 <children>
-                                    <ImageView fx:id="pictureThumbNail" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
-                                 </children>
-                              </Pane>
+                              <Pane fx:id="picturePane" prefHeight="60.0" prefWidth="60.0" />
                            </children>
                         </VBox>
                      </children>
@@ -86,16 +83,16 @@
                   </HBox>
                </children>
             </VBox>
-            <AnchorPane prefHeight="368.0" prefWidth="264.0">
-               <children>
-                  <Button fx:id="leftMoveObject" layoutX="132.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
-                  <Button fx:id="rightMoveObject" layoutX="202.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
-                  <Button fx:id="setTime" layoutX="14.0" layoutY="72.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
-                  <TextField fx:id="fromText" layoutX="107.0" layoutY="72.0" prefWidth="50.0" />
-                  <TextField fx:id="toText" layoutX="185.0" layoutY="72.0" prefWidth="50.0" />
-                  <Label layoutX="168.0" layoutY="77.0" text="-" />
-               </children>
-            </AnchorPane>
-         </children></HBox>
+            <Label layoutX="737.0" layoutY="307.0" text="-" />
+            <TextField fx:id="toText" layoutX="772.0" layoutY="303.0" prefWidth="50.0" />
+            <TextField fx:id="fromText" layoutX="659.0" layoutY="303.0" prefWidth="50.0" />
+            <Button fx:id="rightMoveObject" layoutX="758.0" layoutY="243.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
+            <Button fx:id="leftMoveObject" layoutX="665.0" layoutY="243.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
+            <Button fx:id="setTime" layoutX="554.0" layoutY="300.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
+            <Hyperlink fx:id="importPicture" layoutX="8.0" layoutY="38.0" text="Import pictures" />
+            <Hyperlink fx:id="importAudio" layoutX="13.0" layoutY="73.0" prefHeight="23.0" prefWidth="78.0" text="Import audio" />
+            <Hyperlink fx:id="importVideo" layoutX="14.0" layoutY="111.0" text="Import video" />
+         </children>
+      </Pane>
    </children>
 </AnchorPane>
