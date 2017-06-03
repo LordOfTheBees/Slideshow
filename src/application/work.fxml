@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar layoutX="101.0" layoutY="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem id="openProject" mnemonicParsing="false" text="Open Project..." />
+                  <MenuItem id="saveProject" mnemonicParsing="false" text="Save Project" />
+                  <MenuItem id="addNewProject" mnemonicParsing="false" text="Add New Element" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem id="deleteElement" mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem id="aboutMenu" mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <HBox layoutY="32.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
+         <children>
+            <VBox prefHeight="368.0" prefWidth="338.0">
+               <children>
+                  <HBox fx:id="videoAndPictureBox" prefHeight="120.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="120.0" prefWidth="60.0">
+                           <children>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Label layoutX="23.0" layoutY="20.0" text="Video" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Label layoutX="23.0" layoutY="20.0" text="Picture" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </VBox>
+                        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="120.0" prefWidth="60.0">
+                           <children>
+                              <Pane fx:id="videoPane" prefHeight="60.0" prefWidth="60.0">
+                                 <children>
+                                    <ImageView fx:id="videoThumbNail" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </Pane>
+                              <Pane fx:id="picturePane" prefHeight="60.0" prefWidth="60.0">
+                                 <children>
+                                    <ImageView fx:id="pictureThumbNail" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </Pane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox fx:id="musicBox" prefHeight="60.0" prefWidth="200.0">
+                     <children>
+                        <AnchorPane prefHeight="60.0" prefWidth="60.0">
+                           <children>
+                              <Label layoutX="23.0" layoutY="20.0" text="Music" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <AnchorPane prefHeight="368.0" prefWidth="264.0">
+               <children>
+                  <Button fx:id="leftMoveObject" layoutX="132.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
+                  <Button fx:id="rightMoveObject" layoutX="202.0" layoutY="14.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
+                  <Button id="setTime" layoutX="14.0" layoutY="72.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
+                  <TextField id="fromText" layoutX="107.0" layoutY="72.0" prefWidth="50.0" />
+                  <TextField id="toText" layoutX="185.0" layoutY="72.0" prefWidth="50.0" />
+                  <Label layoutX="168.0" layoutY="77.0" text="-" />
+               </children>
+            </AnchorPane>
+         </children></HBox>
+   </children>
+</AnchorPane>
