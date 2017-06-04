@@ -35,10 +35,7 @@ public class Controller
 	 @FXML private Hyperlink importVideo;
 	 @FXML private Hyperlink importAudio;
 
-	 Music music = new Music();
-	 Video video = new Video();
-	 Picture pic = new Picture();
-
+	 Project project;
 	 @FXML
 	    public void initialize()
 	    {
@@ -47,7 +44,7 @@ public class Controller
 			    @Override
 			    public void handle(ActionEvent e)
 			    {
-			    	pic.loadFile();
+			    	project.loadImage();
 			    }
 		});
 		 importAudio.setOnAction(new EventHandler<ActionEvent>()
@@ -56,7 +53,7 @@ public class Controller
 			    public void handle(ActionEvent e)
 			    {
 
-			    	music.loadFile();
+			    	project.loadMusic();
 			    }
 		});
 		 importVideo.setOnAction(new EventHandler<ActionEvent>()
@@ -64,7 +61,7 @@ public class Controller
 			    @Override
 			    public void handle(ActionEvent e)
 			    {
-			    	video.loadFile();
+			    	project.loadVideo();
 			    }
 		});
 		 openProject.setOnAction(new EventHandler<ActionEvent>()
