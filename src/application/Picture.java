@@ -1,6 +1,9 @@
 package application;
 
+import javax.imageio.ImageIO;
 import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class Picture extends MediaFiles
 {
@@ -25,6 +28,17 @@ public class Picture extends MediaFiles
 	public File getFile()
 	{
 		return picture;
+	}
+
+	public BufferedImage getPreview(){
+		BufferedImage buffImg = new BufferedImage(60, 60, BufferedImage.TYPE_INT_ARGB);
+
+		try {
+			buffImg = ImageIO.read(picture);
+		}
+		catch (IOException e) { }
+
+		return buffImg;
 	}
 
 	public void setTime(String from, String to)

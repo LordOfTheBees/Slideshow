@@ -14,16 +14,20 @@ public class Project
 
 	public void loadMusic(File file)
 	{
+		music = new Music();
 		music.loadFile(file);
 	}
 
 	public void  loadVideo(File file)
 	{
+		video = new Video();
 		video.loadFile(file);
 		files.add(video);
 	}
+
 	public void  loadImage(File file)
 	{
+		picture = new Picture();
 		picture.loadFile(file);
 		files.add(picture);
 	}
@@ -43,5 +47,4 @@ public class Project
 	{
 		return files;
 	}
-
 }

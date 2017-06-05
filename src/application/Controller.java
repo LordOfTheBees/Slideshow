@@ -21,6 +21,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -30,6 +31,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
 {
@@ -37,13 +39,16 @@ public class Controller
 	 @FXML private HBox musicBox, videoAndPictureBox;
 	 @FXML private TextField fromText, toText;
 	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
-	 @FXML private Pane videoPane, picturePane;
-	 @FXML private ImageView pictureThumbNail, videoThumbNail;
 	 @FXML private Hyperlink importPicture;
 	 @FXML private Hyperlink importVideo;
 	 @FXML private Hyperlink importAudio;
 	 @FXML private BorderPane player;
-	 Project project;
+	 @FXML private Pane insertedElement;
+	 @FXML private ImageView insertedPreview;
+
+	private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
+	 Project project = new Project();
+	 public int active_element;
 	 public ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
 	 @FXML
 	    public void initialize()
@@ -57,10 +62,21 @@ public class Controller
 			    	fileChooser.setTitle("Open Resource File");
 
 			        File file = null;
-
 			    	file = fileChooser.showOpenDialog(new Stage());
-			    	String filename = file.getAbsolutePath();
 			    	project.loadImage(file);
+
+					files = project.getContent();
+
+					ImageView image = new ImageView();
+					image.setFitHeight(60);
+					image.setFitWidth(60);
+					image.setId("previewImage" + preview_image.size());
+
+					Image tmp_image = new Image(file.toURI().toString());
+					image.setImage(tmp_image);
+
+					videoAndPictureBox.getChildren().add(image);
+					preview_image.add(image);
 			    }
 		});
 		 importAudio.setOnAction(new EventHandler<ActionEvent>()
@@ -87,12 +103,23 @@ public class Controller
 			    	FileChooser fileChooser = new FileChooser();
 			    	fileChooser.setTitle("Open Resource File");
 
-			        File file = null;
-
-			    	file = fileChooser.showOpenDialog(new Stage());
+			    	File file = fileChooser.showOpenDialog(new Stage());
 			    	String filename = file.getAbsolutePath();
-			    	filename = filename.replace("\\", "/");
 			    	project.loadVideo(file);
+
+					ImageView image = new ImageView();
+					image.setFitHeight(60);
+					image.setFitWidth(60);
+					image.setId("previewImage" + preview_image.size());
+
+					files = project.getContent();
+
+					WritableImage tmp_image = new WritableImage(60, 60);
+					tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
+
+					image.setImage(tmp_image);
+					videoAndPictureBox.getChildren().add(image);
+					preview_image.add(image);
 			    }
 		});
 		 openProject.setOnAction(new EventHandler<ActionEvent>()
@@ -165,25 +192,24 @@ public class Controller
 
 			    }
 		});
-		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
-	        {
+
+		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>() {
+	    		@Override
+	            public void handle(MouseEvent e)
+	            {
+					files = project.getContent();
+					files.size();
+	            }
+	        });
+
+		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>() {
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
 
 	            }
-	        }
-	        );
+	        });
 
-		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
-	        {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-
-	            }
-	        }
-	        );
 		 setTime.setOnMousePressed(new EventHandler<MouseEvent>()
 	        {
 
@@ -210,20 +236,6 @@ public class Controller
 	        );
 
 		 //показывать слайдшоу на экране
-		 files = project.getContent();
-		 for(int i = 0; i < files.size(); i++)
-		 {
-			 File file = files.get(i).getFile();
-			 String filename = file.getAbsolutePath();
-			 filename = filename.replace("\\", "/");
-			 Media media = new Media(new File(filename).toURI().toString());
-			 MediaPlayer mediaPlayer = new MediaPlayer(media);
-			 MediaView mediaView = new MediaView(mediaPlayer);
-			 mediaView.setMediaPlayer(mediaPlayer);
-			 player.setCenter(mediaView);
-			 player.setBottom(addToolBar(mediaPlayer));
-		 }
-
 	    }
 
 
@@ -285,6 +297,13 @@ public class Controller
 
 		 toolBar.getChildren().addAll(playButton, pauseButton);
 		 return toolBar;
+	}
+
+	private Image pictureToPreview(Picture picture){
+		String filename = picture.getFile().getAbsolutePath();
+		filename = filename.replace("\\", "/");
+		Image image = new Image(filename);
+		return image;
 	}
 }
 
