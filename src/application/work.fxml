@@ -16,15 +16,14 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="682.0" prefWidth="909.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<AnchorPane prefHeight="683.0" prefWidth="764.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
       <MenuBar layoutX="101.0" layoutY="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
               <MenuItem fx:id="openProject" mnemonicParsing="false" text="Open Project..." />
-                  <MenuItem fx:id="saveProject" mnemonicParsing="false" text="Save Project" />
-                  <MenuItem fx:id="addNewProject" mnemonicParsing="false" text="Add New Element" />
+              <MenuItem fx:id="saveProject" mnemonicParsing="false" text="Save Project" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -39,7 +38,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Pane layoutY="10.0" prefHeight="662.0" prefWidth="909.0">
+      <Pane layoutY="14.0" prefHeight="658.0" prefWidth="827.0">
          <children>
             <VBox layoutY="396.0" prefHeight="274.0" prefWidth="909.0">
                <children>
@@ -83,16 +82,16 @@
                   </HBox>
                </children>
             </VBox>
-            <Label layoutX="198.0" layoutY="323.0" text="-" />
-            <TextField fx:id="toText" layoutX="214.0" layoutY="319.0" prefWidth="50.0" />
-            <TextField fx:id="fromText" layoutX="139.0" layoutY="319.0" prefWidth="50.0" />
-            <Button fx:id="rightMoveObject" layoutX="400.0" layoutY="316.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
-            <Button fx:id="leftMoveObject" layoutX="336.0" layoutY="316.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
-            <Button fx:id="setTime" layoutX="14.0" layoutY="313.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
+            <Label layoutX="183.0" layoutY="365.0" text="-" />
+            <TextField fx:id="toText" layoutX="202.0" layoutY="361.0" prefWidth="50.0" />
+            <TextField fx:id="fromText" layoutX="124.0" layoutY="361.0" prefWidth="50.0" />
+            <Button fx:id="rightMoveObject" layoutX="359.0" layoutY="358.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
+            <Button fx:id="leftMoveObject" layoutX="298.0" layoutY="358.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
+            <Button fx:id="setTime" layoutX="14.0" layoutY="358.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
             <Hyperlink fx:id="importPicture" layoutX="8.0" layoutY="38.0" text="Import pictures" />
             <Hyperlink fx:id="importAudio" layoutX="13.0" layoutY="73.0" prefHeight="23.0" prefWidth="78.0" text="Import audio" />
             <Hyperlink fx:id="importVideo" layoutX="14.0" layoutY="111.0" text="Import video" />
-            <Pane layoutX="439.0" layoutY="23.0" prefHeight="274.0" prefWidth="440.0" />
+            <BorderPane fx:id="player" layoutX="304.0" layoutY="13.0" prefHeight="338.0" prefWidth="500.0" />
          </children>
       </Pane>
    </children>

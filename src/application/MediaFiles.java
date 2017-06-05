@@ -1,8 +1,10 @@
 package application;
 
+import java.io.File;
+
 abstract class MediaFiles
 {
-	abstract void loadFile();
-	//TODO: сделать метод для времени показа
-	//TODO: Сделать методы для распихивания загруженного
+	abstract void loadFile(File file);
+	abstract boolean isImage();
+	abstract File getFile();
 }
