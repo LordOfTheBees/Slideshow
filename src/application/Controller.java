@@ -107,19 +107,23 @@ public class Controller
 			    	String filename = file.getAbsolutePath();
 			    	project.loadVideo(file);
 
-					ImageView image = new ImageView();
-					image.setFitHeight(60);
-					image.setFitWidth(60);
-					image.setId("previewImage" + preview_image.size());
+					try {
+						ImageView image = new ImageView();
+						image.setFitHeight(60);
+						image.setFitWidth(60);
+						image.setId("previewImage" + preview_image.size());
 
-					files = project.getContent();
+						files = project.getContent();
 
-					WritableImage tmp_image = new WritableImage(60, 60);
-					tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
-
-					image.setImage(tmp_image);
-					videoAndPictureBox.getChildren().add(image);
-					preview_image.add(image);
+						WritableImage tmp_image = new WritableImage(60, 60);
+						tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
+						image.setImage(tmp_image);
+						videoAndPictureBox.getChildren().add(image);
+						preview_image.add(image);
+					} catch (Exception ex) {
+						// TODO Auto-generated catch block
+						ex.printStackTrace();
+					}
 			    }
 		});
 		 openProject.setOnAction(new EventHandler<ActionEvent>()
