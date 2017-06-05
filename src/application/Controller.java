@@ -236,6 +236,19 @@ public class Controller
 	        );
 
 		 //показывать слайдшоу на экране
+		 			files = project.getContent();
+			for(int i = 0; i < files.size(); i++)
+			{
+				File file = files.get(i).getFile();
+				String filename = file.getAbsolutePath();
+				filename = filename.replace("\\", "/");
+				Media media = new Media(new File(filename).toURI().toString());
+				MediaPlayer mediaPlayer = new MediaPlayer(media);
+				MediaView mediaView = new MediaView(mediaPlayer);
+				mediaView.setMediaPlayer(mediaPlayer);
+				player.setCenter(mediaView);
+				player.setBottom(addToolBar(mediaPlayer));
+			}
 	    }
 
 
