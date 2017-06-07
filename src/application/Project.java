@@ -11,11 +11,13 @@ public class Project
 	Video video;
 	Picture picture;
 	private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	private ArrayList<Music> musicFiles  = new ArrayList<Music>();
 
 	public void loadMusic(File file)
 	{
 		music = new Music();
 		music.loadFile(file);
+		musicFiles.add(music);
 	}
 
 	public void  loadVideo(File file)
@@ -59,5 +61,10 @@ public class Project
 		if(numOfElement >= files.size()) new Exception("Project::remove: You cannot delete an element number greater than the array size");
 
 		files.remove(numOfElement);
+	}
+
+	public  ArrayList<Music> getAudioContent()
+	{
+		return musicFiles;
 	}
 }

@@ -19,7 +19,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -50,6 +53,8 @@ public class Controller
 	 private Project project = new Project();
 	 private int active_element = -1;
 	 private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	 private ArrayList<Music> musicFiles  = new ArrayList<Music>();
+
 	 @FXML
 	    public void initialize()
 	    {
@@ -100,6 +105,79 @@ public class Controller
 			    	file = fileChooser.showOpenDialog(new Stage());
 			    	String filename = file.getAbsolutePath();
 			    	project.loadMusic(file);
+
+			    	Media media = new Media(new File(filename).toURI().toString());
+			    	MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+			    	MediaView mediaView = new MediaView(mediaPlayer);
+			    	mediaView.setMediaPlayer(mediaPlayer);
+
+			    	BorderPane borderPane = new BorderPane();
+					borderPane.setCenter(mediaView);
+					HBox mediaBar = new HBox();
+			        mediaBar.setAlignment(Pos.CENTER);
+			        mediaBar.setPadding(new Insets(5, 10, 5, 10));
+			        BorderPane.setAlignment(mediaBar, Pos.CENTER);
+
+			        final Button playButton  = new Button(">");
+			        playButton.setOnAction(new EventHandler<ActionEvent>()
+			        {
+			            public void handle(ActionEvent e)
+			            {
+			                Status status = mediaPlayer.getStatus();
+
+			                if (status == Status.UNKNOWN  || status == Status.HALTED)
+			                {
+
+			                   return;
+			                }
+
+			                  if ( status == Status.PAUSED
+			                     || status == Status.READY
+			                     || status == Status.STOPPED)
+			                  {
+			                     boolean atEndOfMedia = false;
+
+			                     if (atEndOfMedia)
+			                     {
+			                    	 mediaPlayer.seek(mediaPlayer.getStartTime());
+			                        atEndOfMedia = false;
+			                     }
+			                     mediaPlayer.play();
+
+			                  }
+			                  else
+			                  {
+			                     mediaPlayer.pause();
+			                  }
+			                 }
+			           });
+			        mediaBar.getChildren().add(playButton);
+			     // Add spacer
+			        Label spacer = new Label("   ");
+			        mediaBar.getChildren().add(spacer);
+
+			        // Add Time label
+			        Label timeLabel = new Label("Time: ");
+			        mediaBar.getChildren().add(timeLabel);
+
+			        // Add time slider
+			        Slider timeSlider = new Slider();
+			        HBox.setHgrow(timeSlider,Priority.ALWAYS);
+			        timeSlider.setMinWidth(50);
+			        timeSlider.setMaxWidth(Double.MAX_VALUE);
+			        mediaBar.getChildren().add(timeSlider);
+
+			        // Add Play label
+			        Region playTime = new Label();
+			        playTime.setPrefWidth(130);
+			        playTime.setMinWidth(50);
+			        mediaBar.getChildren().add(playTime);
+
+			        borderPane.setBottom(mediaBar);
+					musicBox.getChildren().addAll(borderPane);
+
+
 			    }
 		});
 		 importVideo.setOnAction(new EventHandler<ActionEvent>()
@@ -114,7 +192,8 @@ public class Controller
 			    	String filename = file.getAbsolutePath();
 			    	project.loadVideo(file);
 
-					try {
+					try
+					{
 						ImageView imageView = new ImageView();
 						imageView.setFitHeight(50);
 						imageView.setFitWidth(50);
@@ -213,7 +292,8 @@ public class Controller
 			    }
 		});
 
-		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>() {
+		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
+		 {
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
@@ -239,7 +319,8 @@ public class Controller
 	            }
 	        });
 
-		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>() {
+		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
+		 {
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
@@ -283,14 +364,14 @@ public class Controller
 	            		toText.clear();
 	            		String from = fromText.getText();
 	            		String to = toText.getText();
-	            		int index = 0; //индекс кликнутой картинки
-	            		project.setTime(from, to, index);
+	            		project.setTime(from, to, active_element);
 	            	}
 	            }
 	        }
 	        );
 
-		 deleteButton.setOnMousePressed(new EventHandler<MouseEvent>() {
+		 deleteButton.setOnMousePressed(new EventHandler<MouseEvent>()
+		 {
 			 @Override
 			 public void handle(MouseEvent event) {
 				 if((active_element < 0) ||(active_element >= preview_image.size())) {
@@ -310,28 +391,38 @@ public class Controller
 		 });
 
 
-		 videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		 videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>()
+		 {
 			 @Override
-			 public void handle(MouseEvent event) {
-				 for(int i = 0; i < preview_image.size(); ++i){
+			 public void handle(MouseEvent event)
+			 {
+				 for(int i = 0; i < preview_image.size(); ++i)
+				 {
 					 ImageView tmp_image = preview_image.get(i);
 
-					 tmp_image.setOnMousePressed(new EventHandler<MouseEvent>() {
+					 tmp_image.setOnMousePressed(new EventHandler<MouseEvent>()
+					 {
 						 @Override
-						 public void handle(MouseEvent event) {
+						 public void handle(MouseEvent event)
+						 {
 						 	int tmpInt = Integer.parseInt(tmp_image.getId());
-						 	if(active_element == tmpInt){
+						 	if(active_element == tmpInt)
+						 	{
 								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 								active_element = -1;
-							} else if(active_element != -1){
+							}
+						 	else if(active_element != -1)
+						 	{
 								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
 								active_element = tmpInt;
 								tmpBorderPane = border_pane_for_preview.get(active_element);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-							} else {
+							}
+						 	else
+						 	{
 								active_element = Integer.parseInt(tmp_image.getId());
 
 								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);

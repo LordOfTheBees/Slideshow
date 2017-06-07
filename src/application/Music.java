@@ -9,6 +9,7 @@ public class Music
 	{
 
 		music = file;
+	
     	//Media media = new Media(new File(filename).toURI().toString());
     	//MediaPlayer mediaPlayer = new MediaPlayer(media);
 
