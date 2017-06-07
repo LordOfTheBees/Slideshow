@@ -36,7 +36,7 @@ import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
 {
-	 @FXML private Button leftMoveObject, rightMoveObject, setTime;
+	 @FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton;
 	 @FXML private HBox musicBox, videoAndPictureBox;
 	 @FXML private TextField fromText, toText;
 	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
@@ -44,8 +44,6 @@ public class Controller
 	 @FXML private Hyperlink importVideo;
 	 @FXML private Hyperlink importAudio;
 	 @FXML private BorderPane player;
-	 @FXML private Pane insertedElement;
-	 @FXML private ImageView insertedPreview;
 
 	@FXML private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
 	@FXML private ArrayList<BorderPane> border_pane_for_preview = new ArrayList<BorderPane>();
@@ -292,6 +290,25 @@ public class Controller
 	        }
 	        );
 
+		 deleteButton.setOnMousePressed(new EventHandler<MouseEvent>() {
+			 @Override
+			 public void handle(MouseEvent event) {
+				 if((active_element < 0) ||(active_element >= preview_image.size())) {
+					 return;
+				 }
+
+				 project.remove(active_element);
+				 removeElementInPreviewImages(active_element);
+				 removeElementInBorderPaneForPreviewImages(active_element);
+
+				 videoAndPictureBox.getChildren().remove(active_element + 1);
+
+				 active_element = -1;
+
+				 files = project.getContent();
+			 }
+		 });
+
 
 		 videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			 @Override
@@ -419,9 +436,6 @@ public class Controller
 		borderPaneSecond.setPrefWidth(border_pane_for_preview.get(first).getPrefWidth());
 		borderPaneSecond.setPrefHeight(border_pane_for_preview.get(first).getPrefHeight());
 
-		BorderPane deleteBorderFirst = border_pane_for_preview.get(first);
-		BorderPane deleteBorderSecond = border_pane_for_preview.get(first);
-
 		borderPaneFirst.setId("" + first);
 		borderPaneSecond.setId("" + second);
 
@@ -440,6 +454,22 @@ public class Controller
 
 		preview_image.set(first, imageViewSecond);
 		preview_image.set(second, imageViewFirst);
+	}
+
+	private void removeElementInPreviewImages(int number){
+		preview_image.remove(number);
+
+		for(int i = number; i < preview_image.size(); ++i){
+			preview_image.get(i).setId("" + i);
+		}
+	}
+
+	private void removeElementInBorderPaneForPreviewImages(int number){
+		border_pane_for_preview.remove(number);
+
+		for(int i = number; i < border_pane_for_preview.size(); ++i){
+			border_pane_for_preview.get(i).setId("" + i);
+		}
 	}
 }
 

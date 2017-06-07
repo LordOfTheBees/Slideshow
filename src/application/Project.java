@@ -10,7 +10,7 @@ public class Project
 	Music music;
 	Video video;
 	Picture picture;
-	public ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
 
 	public void loadMusic(File file)
 	{
@@ -52,5 +52,12 @@ public class Project
 		MediaFiles tmp_media_files = files.get(first);
 		files.set(first, files.get(second));
 		files.set(second, tmp_media_files);
+	}
+
+	public void remove(int numOfElement){
+		if(numOfElement < 0) new Exception("Project::remove: You cannot delete an element with a negative number");
+		if(numOfElement >= files.size()) new Exception("Project::remove: You cannot delete an element number greater than the array size");
+
+		files.remove(numOfElement);
 	}
 }
