@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -35,6 +38,7 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
@@ -111,73 +115,12 @@ public class Controller
 
 			    	MediaView mediaView = new MediaView(mediaPlayer);
 			    	mediaView.setMediaPlayer(mediaPlayer);
-
 			    	BorderPane borderPane = new BorderPane();
 					borderPane.setCenter(mediaView);
-					HBox mediaBar = new HBox();
-			        mediaBar.setAlignment(Pos.CENTER);
-			        mediaBar.setPadding(new Insets(5, 10, 5, 10));
-			        BorderPane.setAlignment(mediaBar, Pos.CENTER);
 
-			        final Button playButton  = new Button(">");
-			        playButton.setOnAction(new EventHandler<ActionEvent>()
-			        {
-			            public void handle(ActionEvent e)
-			            {
-			                Status status = mediaPlayer.getStatus();
+					MediaControl med = new MediaControl(mediaPlayer, borderPane);
 
-			                if (status == Status.UNKNOWN  || status == Status.HALTED)
-			                {
-
-			                   return;
-			                }
-
-			                  if ( status == Status.PAUSED
-			                     || status == Status.READY
-			                     || status == Status.STOPPED)
-			                  {
-			                     boolean atEndOfMedia = false;
-
-			                     if (atEndOfMedia)
-			                     {
-			                    	 mediaPlayer.seek(mediaPlayer.getStartTime());
-			                        atEndOfMedia = false;
-			                     }
-			                     mediaPlayer.play();
-
-			                  }
-			                  else
-			                  {
-			                     mediaPlayer.pause();
-			                  }
-			                 }
-			           });
-			        mediaBar.getChildren().add(playButton);
-			     // Add spacer
-			        Label spacer = new Label("   ");
-			        mediaBar.getChildren().add(spacer);
-
-			        // Add Time label
-			        Label timeLabel = new Label("Time: ");
-			        mediaBar.getChildren().add(timeLabel);
-
-			        // Add time slider
-			        Slider timeSlider = new Slider();
-			        HBox.setHgrow(timeSlider,Priority.ALWAYS);
-			        timeSlider.setMinWidth(50);
-			        timeSlider.setMaxWidth(Double.MAX_VALUE);
-			        mediaBar.getChildren().add(timeSlider);
-
-			        // Add Play label
-			        Region playTime = new Label();
-			        playTime.setPrefWidth(130);
-			        playTime.setMinWidth(50);
-			        mediaBar.getChildren().add(playTime);
-
-			        borderPane.setBottom(mediaBar);
 					musicBox.getChildren().addAll(borderPane);
-
-
 			    }
 		});
 		 importVideo.setOnAction(new EventHandler<ActionEvent>()
@@ -435,22 +378,32 @@ public class Controller
 			 }
 		 });
 
-
-
+		 System.out.print(45);
+   
 		 //показывать слайдшоу на экране
-		 			files = project.getContent();
-			for(int i = 0; i < files.size(); i++)
-			{
-				File file = files.get(i).getFile();
+		 	files = project.getContent();
+			//for(int i = 0; i < files.size(); i++)
+			//{
+		 	player.setStyle("-fx-background-color: #bfc2c7;");
+		 	if(files.size() != 0)
+		 	{	
+		 		File file = files.get(0).getFile();
 				String filename = file.getAbsolutePath();
 				filename = filename.replace("\\", "/");
 				Media media = new Media(new File(filename).toURI().toString());
 				MediaPlayer mediaPlayer = new MediaPlayer(media);
 				MediaView mediaView = new MediaView(mediaPlayer);
-				mediaView.setMediaPlayer(mediaPlayer);
-				player.setCenter(mediaView);
-				player.setBottom(addToolBar(mediaPlayer));
-			}
+				//mediaView.setMediaPlayer(mediaPlayer);
+				Pane mvPane = new Pane() {  };
+				mvPane.setStyle("-fx-background-color: black;"); 
+			    mvPane.getChildren().add(mediaView);
+				//player.setCenter(mvPane);
+				MediaControl mkl = new MediaControl(mediaPlayer, player);
+				//player.setBottom(addToolBar(mediaPlayer));
+		 	}	
+			//}
+			//MediaControl mkl = new MediaControl(mediaPlayer, player);
+			 
 	    }
 
 

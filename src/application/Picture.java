@@ -12,12 +12,7 @@ public class Picture extends MediaFiles
 	public void loadFile(File file)
 
 	{
-
 		picture = file;
-    	//filename = filename.replace("\\", "/");
-    	//Image image = new Image(filename);
-    	//ImageView imageView = new ImageView(image);
-
 	}
 
 	public boolean isImage()
