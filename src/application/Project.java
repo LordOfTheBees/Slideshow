@@ -47,4 +47,10 @@ public class Project
 	{
 		return files;
 	}
+
+	public void swap(int first, int second){
+		MediaFiles tmp_media_files = files.get(first);
+		files.set(first, files.get(second));
+		files.set(second, tmp_media_files);
+	}
 }

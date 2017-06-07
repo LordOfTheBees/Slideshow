@@ -9,11 +9,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -23,12 +25,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.embed.swing.SwingFXUtils;
@@ -46,10 +47,11 @@ public class Controller
 	 @FXML private Pane insertedElement;
 	 @FXML private ImageView insertedPreview;
 
-	private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
-	 Project project = new Project();
-	 public int active_element;
-	 public ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	@FXML private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
+	@FXML private ArrayList<BorderPane> border_pane_for_preview = new ArrayList<BorderPane>();
+	 private Project project = new Project();
+	 private int active_element = -1;
+	 private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
 	 @FXML
 	    public void initialize()
 	    {
@@ -67,16 +69,24 @@ public class Controller
 
 					files = project.getContent();
 
-					ImageView image = new ImageView();
-					image.setFitHeight(60);
-					image.setFitWidth(60);
-					image.setId("previewImage" + preview_image.size());
+					ImageView imageView = new ImageView();
+					imageView.setFitHeight(50);
+					imageView.setFitWidth(50);
+					imageView.setId("" + preview_image.size());
 
 					Image tmp_image = new Image(file.toURI().toString());
-					image.setImage(tmp_image);
+					imageView.setImage(tmp_image);
 
-					videoAndPictureBox.getChildren().add(image);
-					preview_image.add(image);
+					BorderPane borderPane = new BorderPane();
+					borderPane.setCenter(imageView);
+					borderPane.setPrefWidth(60);
+					borderPane.setPrefHeight(60);
+					borderPane.setId("" + preview_image.size());
+
+					videoAndPictureBox.getChildren().addAll(borderPane);
+
+					border_pane_for_preview.add(borderPane);
+					preview_image.add(imageView);
 			    }
 		});
 		 importAudio.setOnAction(new EventHandler<ActionEvent>()
@@ -91,7 +101,6 @@ public class Controller
 
 			    	file = fileChooser.showOpenDialog(new Stage());
 			    	String filename = file.getAbsolutePath();
-			    	filename = filename.replace("\\", "/");
 			    	project.loadMusic(file);
 			    }
 		});
@@ -108,18 +117,27 @@ public class Controller
 			    	project.loadVideo(file);
 
 					try {
-						ImageView image = new ImageView();
-						image.setFitHeight(60);
-						image.setFitWidth(60);
-						image.setId("previewImage" + preview_image.size());
+						ImageView imageView = new ImageView();
+						imageView.setFitHeight(50);
+						imageView.setFitWidth(50);
+						imageView.setId("" + preview_image.size());
 
 						files = project.getContent();
 
-						WritableImage tmp_image = new WritableImage(60, 60);
+						WritableImage tmp_image = new WritableImage(50, 50);
 						tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
-						image.setImage(tmp_image);
-						videoAndPictureBox.getChildren().add(image);
-						preview_image.add(image);
+						imageView.setImage(tmp_image);
+
+						BorderPane borderPane = new BorderPane();
+						borderPane.setCenter(imageView);
+						borderPane.setPrefWidth(60);
+						borderPane.setPrefHeight(60);
+						borderPane.setId("" + preview_image.size());
+
+						videoAndPictureBox.getChildren().addAll(borderPane);
+
+						border_pane_for_preview.add(borderPane);
+						preview_image.add(imageView);
 					} catch (Exception ex) {
 						// TODO Auto-generated catch block
 						ex.printStackTrace();
@@ -201,8 +219,25 @@ public class Controller
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
+					if(active_element <= 0){
+						return;
+					}
+
+					int first = active_element - 1;
+					int second = active_element;
+
+					//swap
+					swapPreviewImageView(first, second);
+					swapBorderPaneForPreview(first, second);
+					project.swap(first, second);
 					files = project.getContent();
-					files.size();
+
+					videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
+					videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
+
+					border_pane_for_preview.get(first).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					active_element = active_element - 1;
 	            }
 	        });
 
@@ -210,7 +245,25 @@ public class Controller
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
+					if(active_element == preview_image.size() - 1){
+						return;
+					}
 
+					int first = active_element;
+					int second = active_element + 1;
+
+					//swap
+					swapPreviewImageView(first, second);
+					swapBorderPaneForPreview(first, second);
+					project.swap(first, second);
+					files = project.getContent();
+
+					videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
+					videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
+
+					border_pane_for_preview.get(second).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					active_element = active_element + 1;
 	            }
 	        });
 
@@ -238,6 +291,43 @@ public class Controller
 	            }
 	        }
 	        );
+
+
+		 videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			 @Override
+			 public void handle(MouseEvent event) {
+				 for(int i = 0; i < preview_image.size(); ++i){
+					 ImageView tmp_image = preview_image.get(i);
+
+					 tmp_image.setOnMousePressed(new EventHandler<MouseEvent>() {
+						 @Override
+						 public void handle(MouseEvent event) {
+						 	int tmpInt = Integer.parseInt(tmp_image.getId());
+						 	if(active_element == tmpInt){
+								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
+								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								active_element = -1;
+							} else if(active_element != -1){
+								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
+								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+								active_element = tmpInt;
+								tmpBorderPane = border_pane_for_preview.get(active_element);
+								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+							} else {
+								active_element = Integer.parseInt(tmp_image.getId());
+
+								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
+								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+								//TODO отрисовка рамки
+							}
+						 }
+					 });
+				 }
+			 }
+		 });
+
+
 
 		 //показывать слайдшоу на экране
 		 			files = project.getContent();
@@ -316,11 +406,40 @@ public class Controller
 		 return toolBar;
 	}
 
-	private Image pictureToPreview(Picture picture){
-		String filename = picture.getFile().getAbsolutePath();
-		filename = filename.replace("\\", "/");
-		Image image = new Image(filename);
-		return image;
+	private void swapBorderPaneForPreview(int first, int second){
+		BorderPane borderPaneFirst = new BorderPane();
+		BorderPane borderPaneSecond = new BorderPane();
+
+		borderPaneFirst.setCenter(border_pane_for_preview.get(second).getCenter());
+		borderPaneSecond.setCenter(border_pane_for_preview.get(first).getCenter());
+
+		borderPaneFirst.setPrefWidth(border_pane_for_preview.get(second).getPrefWidth());
+		borderPaneFirst.setPrefHeight(border_pane_for_preview.get(second).getPrefHeight());
+
+		borderPaneSecond.setPrefWidth(border_pane_for_preview.get(first).getPrefWidth());
+		borderPaneSecond.setPrefHeight(border_pane_for_preview.get(first).getPrefHeight());
+
+		BorderPane deleteBorderFirst = border_pane_for_preview.get(first);
+		BorderPane deleteBorderSecond = border_pane_for_preview.get(first);
+
+		borderPaneFirst.setId("" + first);
+		borderPaneSecond.setId("" + second);
+
+		border_pane_for_preview.set(first, borderPaneFirst);
+		border_pane_for_preview.set(second, borderPaneSecond);
+
+
+	}
+
+	private void swapPreviewImageView(int first, int second){
+		ImageView imageViewFirst = preview_image.get(first);
+		ImageView imageViewSecond = preview_image.get(second);
+
+		imageViewFirst.setId("" + second);
+		imageViewSecond.setId("" + first);
+
+		preview_image.set(first, imageViewSecond);
+		preview_image.set(second, imageViewFirst);
 	}
 }
 
