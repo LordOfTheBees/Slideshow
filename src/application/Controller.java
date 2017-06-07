@@ -39,45 +39,178 @@ import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
 {
-	 @FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton;
-	 @FXML private HBox musicBox, videoAndPictureBox;
-	 @FXML private TextField fromText, toText;
-	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
-	 @FXML private Hyperlink importPicture;
-	 @FXML private Hyperlink importVideo;
-	 @FXML private Hyperlink importAudio;
-	 @FXML private BorderPane player;
+	@FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton;
+	@FXML private HBox musicBox, videoAndPictureBox;
+	@FXML private TextField fromText, toText;
+	@FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
+	@FXML private Hyperlink importPicture;
+	@FXML private Hyperlink importVideo;
+	@FXML private Hyperlink importAudio;
+	@FXML private BorderPane player;
 
 	@FXML private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
 	@FXML private ArrayList<BorderPane> border_pane_for_preview = new ArrayList<BorderPane>();
-	 private Project project = new Project();
-	 private int active_element = -1;
-	 private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
-	 private ArrayList<Music> musicFiles  = new ArrayList<Music>();
+	@FXML private ArrayList<BorderPane> borderPanesAudio = new ArrayList<BorderPane>();
+	private Project project = new Project();
+	private int activeMediaElement = -1;
+	private int activeAudioElement = -1;
+	private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	private ArrayList<Music> musicFiles  = new ArrayList<Music>();
 
-	 @FXML
-	    public void initialize()
-	    {
-		 importPicture.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override
-			    public void handle(ActionEvent e)
-			    {
-			    	FileChooser fileChooser = new FileChooser();
-			    	fileChooser.setTitle("Open Resource File");
+	@FXML
+	public void initialize()
+	{
+		importPicture.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent e)
+			{
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Resource File");
 
-			        File file = null;
-			    	file = fileChooser.showOpenDialog(new Stage());
-			    	project.loadImage(file);
+				File file = null;
+				file = fileChooser.showOpenDialog(new Stage());
+				project.loadImage(file);
 
-					files = project.getContent();
+				files = project.getContent();
 
+				ImageView imageView = new ImageView();
+				imageView.setFitHeight(50);
+				imageView.setFitWidth(50);
+				imageView.setId("" + preview_image.size());
+
+				Image tmp_image = new Image(file.toURI().toString());
+				imageView.setImage(tmp_image);
+
+				BorderPane borderPane = new BorderPane();
+				borderPane.setCenter(imageView);
+				borderPane.setPrefWidth(60);
+				borderPane.setPrefHeight(60);
+				borderPane.setId("" + preview_image.size());
+
+				videoAndPictureBox.getChildren().addAll(borderPane);
+
+				border_pane_for_preview.add(borderPane);
+				preview_image.add(imageView);
+			}
+		});
+		importAudio.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent e)
+			{
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Resource File");
+
+				File file = null;
+
+				file = fileChooser.showOpenDialog(new Stage());
+				String filename = file.getAbsolutePath();
+				project.loadMusic(file);
+
+				Media media = new Media(new File(filename).toURI().toString());
+				MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+				MediaView mediaView = new MediaView(mediaPlayer);
+				mediaView.setMediaPlayer(mediaPlayer);
+
+				BorderPane borderPane = new BorderPane();
+				borderPane.setCenter(mediaView);
+				HBox mediaBar = new HBox();
+				mediaBar.setAlignment(Pos.CENTER);
+				mediaBar.setPadding(new Insets(5, 10, 5, 10));
+				//borderPane.setTop(mediaBar);
+				BorderPane.setAlignment(mediaBar, Pos.TOP_CENTER);
+
+				final Button playButton  = new Button(">");
+				playButton.setOnAction(new EventHandler<ActionEvent>()
+				{
+					public void handle(ActionEvent e)
+					{
+						Status status = mediaPlayer.getStatus();
+
+						if (status == Status.UNKNOWN  || status == Status.HALTED)
+						{
+
+							return;
+						}
+
+						if ( status == Status.PAUSED
+								|| status == Status.READY
+								|| status == Status.STOPPED)
+						{
+							boolean atEndOfMedia = false;
+
+							if (atEndOfMedia)
+							{
+								mediaPlayer.seek(mediaPlayer.getStartTime());
+								atEndOfMedia = false;
+							}
+							mediaPlayer.play();
+
+						}
+						else
+						{
+							mediaPlayer.pause();
+						}
+					}
+				});
+				mediaBar.getChildren().add(playButton);
+				// Add spacer
+				Label spacer = new Label("  ");
+				mediaBar.getChildren().add(spacer);
+
+				// Add Time label
+				Label timeLabel = new Label("Time: ");
+				mediaBar.getChildren().add(timeLabel);
+
+				// Add time slider
+				Slider timeSlider = new Slider();
+				HBox.setHgrow(timeSlider,Priority.ALWAYS);
+				timeSlider.setMinWidth(100);
+				timeSlider.setMaxWidth(100);
+				mediaBar.getChildren().add(timeSlider);
+
+				// Add Play label
+				Region playTime = new Label();
+				playTime.setMaxWidth(0);
+				playTime.setMinWidth(0);
+				mediaBar.getChildren().add(playTime);
+
+				borderPane.setCenter(mediaBar);
+
+				borderPane.setPrefWidth(200);
+				borderPane.setId("" + borderPanesAudio.size());
+				borderPanesAudio.add(borderPane);
+
+				musicBox.getChildren().addAll(borderPane);
+
+
+			}
+		});
+		importVideo.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent e)
+			{
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Resource File");
+
+				File file = fileChooser.showOpenDialog(new Stage());
+				String filename = file.getAbsolutePath();
+				project.loadVideo(file);
+
+				try
+				{
 					ImageView imageView = new ImageView();
 					imageView.setFitHeight(50);
 					imageView.setFitWidth(50);
 					imageView.setId("" + preview_image.size());
 
-					Image tmp_image = new Image(file.toURI().toString());
+					files = project.getContent();
+
+					WritableImage tmp_image = new WritableImage(50, 50);
+					tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
 					imageView.setImage(tmp_image);
 
 					BorderPane borderPane = new BorderPane();
@@ -90,219 +223,91 @@ public class Controller
 
 					border_pane_for_preview.add(borderPane);
 					preview_image.add(imageView);
-			    }
+				} catch (Exception ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
+			}
 		});
-		 importAudio.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override
-			    public void handle(ActionEvent e)
-			    {
-			    	FileChooser fileChooser = new FileChooser();
-			    	fileChooser.setTitle("Open Resource File");
+		openProject.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override public void handle(ActionEvent e)
+			{
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Resource File");
 
-			        File file = null;
+				FileInputStream fis = null;
+				File file = null;
+				ObjectInputStream in = null;
 
-			    	file = fileChooser.showOpenDialog(new Stage());
-			    	String filename = file.getAbsolutePath();
-			    	project.loadMusic(file);
+				//десериализация
+				try
+				{
+					file = fileChooser.showOpenDialog(new Stage());
+					String filename = file.getAbsolutePath();
+					fis = new FileInputStream(filename);
+					in = new ObjectInputStream(fis);
 
-			    	Media media = new Media(new File(filename).toURI().toString());
-			    	MediaPlayer mediaPlayer = new MediaPlayer(media);
-
-			    	MediaView mediaView = new MediaView(mediaPlayer);
-			    	mediaView.setMediaPlayer(mediaPlayer);
-
-			    	BorderPane borderPane = new BorderPane();
-					borderPane.setCenter(mediaView);
-					HBox mediaBar = new HBox();
-			        mediaBar.setAlignment(Pos.CENTER);
-			        mediaBar.setPadding(new Insets(5, 10, 5, 10));
-			        BorderPane.setAlignment(mediaBar, Pos.CENTER);
-
-			        final Button playButton  = new Button(">");
-			        playButton.setOnAction(new EventHandler<ActionEvent>()
-			        {
-			            public void handle(ActionEvent e)
-			            {
-			                Status status = mediaPlayer.getStatus();
-
-			                if (status == Status.UNKNOWN  || status == Status.HALTED)
-			                {
-
-			                   return;
-			                }
-
-			                  if ( status == Status.PAUSED
-			                     || status == Status.READY
-			                     || status == Status.STOPPED)
-			                  {
-			                     boolean atEndOfMedia = false;
-
-			                     if (atEndOfMedia)
-			                     {
-			                    	 mediaPlayer.seek(mediaPlayer.getStartTime());
-			                        atEndOfMedia = false;
-			                     }
-			                     mediaPlayer.play();
-
-			                  }
-			                  else
-			                  {
-			                     mediaPlayer.pause();
-			                  }
-			                 }
-			           });
-			        mediaBar.getChildren().add(playButton);
-			     // Add spacer
-			        Label spacer = new Label("   ");
-			        mediaBar.getChildren().add(spacer);
-
-			        // Add Time label
-			        Label timeLabel = new Label("Time: ");
-			        mediaBar.getChildren().add(timeLabel);
-
-			        // Add time slider
-			        Slider timeSlider = new Slider();
-			        HBox.setHgrow(timeSlider,Priority.ALWAYS);
-			        timeSlider.setMinWidth(50);
-			        timeSlider.setMaxWidth(Double.MAX_VALUE);
-			        mediaBar.getChildren().add(timeSlider);
-
-			        // Add Play label
-			        Region playTime = new Label();
-			        playTime.setPrefWidth(130);
-			        playTime.setMinWidth(50);
-			        mediaBar.getChildren().add(playTime);
-
-			        borderPane.setBottom(mediaBar);
-					musicBox.getChildren().addAll(borderPane);
-
-
-			    }
-		});
-		 importVideo.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override
-			    public void handle(ActionEvent e)
-			    {
-			    	FileChooser fileChooser = new FileChooser();
-			    	fileChooser.setTitle("Open Resource File");
-
-			    	File file = fileChooser.showOpenDialog(new Stage());
-			    	String filename = file.getAbsolutePath();
-			    	project.loadVideo(file);
-
-					try
-					{
-						ImageView imageView = new ImageView();
-						imageView.setFitHeight(50);
-						imageView.setFitWidth(50);
-						imageView.setId("" + preview_image.size());
-
-						files = project.getContent();
-
-						WritableImage tmp_image = new WritableImage(50, 50);
-						tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
-						imageView.setImage(tmp_image);
-
-						BorderPane borderPane = new BorderPane();
-						borderPane.setCenter(imageView);
-						borderPane.setPrefWidth(60);
-						borderPane.setPrefHeight(60);
-						borderPane.setId("" + preview_image.size());
-
-						videoAndPictureBox.getChildren().addAll(borderPane);
-
-						border_pane_for_preview.add(borderPane);
-						preview_image.add(imageView);
-					} catch (Exception ex) {
-						// TODO Auto-generated catch block
-						ex.printStackTrace();
-					}
-			    }
-		});
-		 openProject.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override public void handle(ActionEvent e)
-			    {
-			    	FileChooser fileChooser = new FileChooser();
-	            	fileChooser.setTitle("Open Resource File");
-
-	                FileInputStream fis = null;
-	                File file = null;
-	                ObjectInputStream in = null;
-
-	                //десериализация
-	                try
-	                {
-	                	file = fileChooser.showOpenDialog(new Stage());
-	                	String filename = file.getAbsolutePath();
-	                	fis = new FileInputStream(filename);
-	                    in = new ObjectInputStream(fis);
-
-	                }
-	                catch(IOException ex)
-	                {
-	                	alertWindowError("Input error");
-	                }
-			    }
+				}
+				catch(IOException ex)
+				{
+					alertWindowError("Input error");
+				}
+			}
 		});
 
-		 saveProject.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override public void handle(ActionEvent e)
-			    {
-			    	FileChooser fileChooser = new FileChooser();
-	            	fileChooser.setTitle("Save as...");
-	            	File file = null;
+		saveProject.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override public void handle(ActionEvent e)
+			{
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Save as...");
+				File file = null;
 
-	                FileOutputStream fos = null;
-	                ObjectOutputStream out = null;
+				FileOutputStream fos = null;
+				ObjectOutputStream out = null;
 
-	                //сериализация
-	                try
-	                {
-	                 	file = fileChooser.showSaveDialog(new Stage());
-	                	String filename = file.getAbsolutePath();
+				//сериализация
+				try
+				{
+					file = fileChooser.showSaveDialog(new Stage());
+					String filename = file.getAbsolutePath();
 
-	                    fos = new FileOutputStream(filename);
-	                    out = new ObjectOutputStream(fos);
+					fos = new FileOutputStream(filename);
+					out = new ObjectOutputStream(fos);
 
-	                    out.close();
-	                 }
-	                 catch(IOException ex)
-	                {
-	                	 alertWindowError("Output error");
-	                }
-			    }
+					out.close();
+				}
+				catch(IOException ex)
+				{
+					alertWindowError("Output error");
+				}
+			}
 		});
 
-		 deleteElement.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override public void handle(ActionEvent e)
-			    {
+		deleteElement.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override public void handle(ActionEvent e)
+			{
 
-			    }
+			}
 		});
-		 aboutMenu.setOnAction(new EventHandler<ActionEvent>()
-		 {
-			    @Override public void handle(ActionEvent e)
-			    {
+		aboutMenu.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override public void handle(ActionEvent e)
+			{
 
-			    }
+			}
 		});
 
-		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
-		 {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-					if(active_element <= 0){
-						return;
-					}
-
-					int first = active_element - 1;
-					int second = active_element;
+		leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent e)
+			{
+				if((activeMediaElement > 0) && (activeMediaElement < preview_image.size())){
+					int first = activeMediaElement - 1;
+					int second = activeMediaElement;
 
 					//swap
 					swapPreviewImageView(first, second);
@@ -315,21 +320,31 @@ public class Controller
 
 					border_pane_for_preview.get(first).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-					active_element = active_element - 1;
-	            }
-	        });
+					activeMediaElement = activeMediaElement - 1;
+				} else if((activeAudioElement > 0) && (activeAudioElement < borderPanesAudio.size())){
+					int first = activeAudioElement - 1;
+					int second = activeAudioElement;
 
-		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
-		 {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-					if(active_element == preview_image.size() - 1){
-						return;
-					}
+					swapBorderPaneForAudio(first, second);
 
-					int first = active_element;
-					int second = active_element + 1;
+					musicBox.getChildren().set(first + 1, borderPanesAudio.get(first));
+					musicBox.getChildren().set(second + 1, borderPanesAudio.get(second));
+
+					borderPanesAudio.get(first).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					activeAudioElement = activeAudioElement - 1;
+				}
+			}
+		});
+
+		rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent e)
+			{
+				if((activeMediaElement >= 0) && (activeMediaElement < preview_image.size() - 1)){
+					int first = activeMediaElement;
+					int second = activeMediaElement + 1;
 
 					//swap
 					swapPreviewImageView(first, second);
@@ -342,176 +357,250 @@ public class Controller
 
 					border_pane_for_preview.get(second).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-					active_element = active_element + 1;
-	            }
-	        });
+					activeMediaElement = activeMediaElement + 1;
+				} else if((activeAudioElement >= 0) && (activeAudioElement < borderPanesAudio.size() - 1)){
+					int first = activeAudioElement;
+					int second = activeAudioElement + 1;
 
-		 setTime.setOnMousePressed(new EventHandler<MouseEvent>()
-	        {
+					swapBorderPaneForAudio(first, second);
+
+					musicBox.getChildren().set(first + 1, borderPanesAudio.get(first));
+					musicBox.getChildren().set(second + 1, borderPanesAudio.get(second));
+
+					borderPanesAudio.get(second).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					activeAudioElement = activeAudioElement + 1;
+				}
+			}
+		});
+
+		setTime.setOnMousePressed(new EventHandler<MouseEvent>()
+		{
+									  @Override
+									  public void handle(MouseEvent e)
+									  {
+										  System.out.println("Button clicked");
+										  if(fromText.getText().isEmpty() && toText.getText().isEmpty())
+										  {
+											  Toolkit.getDefaultToolkit().beep();
+										  }
+										  else
+										  {
+											  fromText.clear();
+											  toText.clear();
+											  String from = fromText.getText();
+											  String to = toText.getText();
+											  project.setTime(from, to, activeMediaElement);
+										  }
+									  }
+								  });
+
+		deleteButton.setOnMousePressed(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent event) {
+				if((activeMediaElement >= 0) && (activeMediaElement < preview_image.size())) {
+					project.remove(activeMediaElement);
+					removeElementInPreviewImages(activeMediaElement);
+					removeElementInBorderPaneForPreviewImages(activeMediaElement);
+
+					videoAndPictureBox.getChildren().remove(activeMediaElement + 1);
+
+					activeMediaElement = -1;
+
+					files = project.getContent();
+				} else if((activeAudioElement >= 0) && (activeAudioElement < borderPanesAudio.size())){
+					removeElementInBorderPaneForAudio(activeAudioElement);
+					musicBox.getChildren().remove(activeAudioElement + 1);
+				}
+			}
+		});
 
 
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-	    			System.out.println("Button clicked");
-	    			if(fromText.getText().isEmpty() && toText.getText().isEmpty())
-	            	{
-	            		Toolkit.getDefaultToolkit().beep();
-	            	}
-	            	else
-	            	{
-	            		fromText.clear();
-	            		toText.clear();
-	            		String from = fromText.getText();
-	            		String to = toText.getText();
-	            		project.setTime(from, to, active_element);
-	            	}
-	            }
-	        }
-	        );
+		videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent event)
+			{
+				for(int i = 0; i < preview_image.size(); ++i)
+				{
+					ImageView tmp_image = preview_image.get(i);
 
-		 deleteButton.setOnMousePressed(new EventHandler<MouseEvent>()
-		 {
-			 @Override
-			 public void handle(MouseEvent event) {
-				 if((active_element < 0) ||(active_element >= preview_image.size())) {
-					 return;
-				 }
-
-				 project.remove(active_element);
-				 removeElementInPreviewImages(active_element);
-				 removeElementInBorderPaneForPreviewImages(active_element);
-
-				 videoAndPictureBox.getChildren().remove(active_element + 1);
-
-				 active_element = -1;
-
-				 files = project.getContent();
-			 }
-		 });
-
-
-		 videoAndPictureBox.setOnMouseClicked(new EventHandler<MouseEvent>()
-		 {
-			 @Override
-			 public void handle(MouseEvent event)
-			 {
-				 for(int i = 0; i < preview_image.size(); ++i)
-				 {
-					 ImageView tmp_image = preview_image.get(i);
-
-					 tmp_image.setOnMousePressed(new EventHandler<MouseEvent>()
-					 {
-						 @Override
-						 public void handle(MouseEvent event)
-						 {
-						 	int tmpInt = Integer.parseInt(tmp_image.getId());
-						 	if(active_element == tmpInt)
-						 	{
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
-								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-								active_element = -1;
+					tmp_image.setOnMousePressed(new EventHandler<MouseEvent>()
+					{
+						@Override
+						public void handle(MouseEvent event)
+						{
+							if(activeAudioElement != -1){
+								borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								activeAudioElement = -1;
 							}
-						 	else if(active_element != -1)
-						 	{
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
+							int tmpInt = Integer.parseInt(tmp_image.getId());
+							if(activeMediaElement == tmpInt)
+							{
+								BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
+								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								activeMediaElement = -1;
+							}
+							else if(activeMediaElement != -1)
+							{
+								BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-								active_element = tmpInt;
-								tmpBorderPane = border_pane_for_preview.get(active_element);
+								activeMediaElement = tmpInt;
+								tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 							}
-						 	else
-						 	{
-								active_element = Integer.parseInt(tmp_image.getId());
+							else
+							{
+								activeMediaElement = Integer.parseInt(tmp_image.getId());
 
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
+								BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 								//TODO отрисовка рамки
 							}
-						 }
-					 });
-				 }
-			 }
-		 });
-
-
-
-		 //показывать слайдшоу на экране
-		 			files = project.getContent();
-			for(int i = 0; i < files.size(); i++)
-			{
-				File file = files.get(i).getFile();
-				String filename = file.getAbsolutePath();
-				filename = filename.replace("\\", "/");
-				Media media = new Media(new File(filename).toURI().toString());
-				MediaPlayer mediaPlayer = new MediaPlayer(media);
-				MediaView mediaView = new MediaView(mediaPlayer);
-				mediaView.setMediaPlayer(mediaPlayer);
-				player.setCenter(mediaView);
-				player.setBottom(addToolBar(mediaPlayer));
+						}
+					});
+				}
 			}
-	    }
+		});
+
+		musicBox.setOnMouseClicked(new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent event) {
+				for(int i = 0; i < borderPanesAudio.size(); ++i){
+					BorderPane borderPane = borderPanesAudio.get(i);
+
+					borderPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent event) {
+							if(activeMediaElement != -1){
+								border_pane_for_preview.get(activeMediaElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								activeMediaElement = -1;
+							}
+							int tmpInt = Integer.parseInt(borderPane.getId());
+							if(activeAudioElement == tmpInt)
+							{
+								borderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								activeAudioElement = -1;
+							}
+							else if(activeAudioElement != -1)
+							{
+								borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+								activeAudioElement = tmpInt;
+								borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+							}
+							else
+							{
+								activeAudioElement = tmpInt;
+
+								borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+								//TODO отрисовка рамки
+							}
+						}
+					});
+				}
+			}
+		});
 
 
-	 public void alertWindowError(String str)
-	 {
-	 	Alert alert = new Alert(Alert.AlertType.ERROR);
-	 	Toolkit.getDefaultToolkit().beep();
-	 	alert.setContentText(str);
-	 	alert.showAndWait();
-	 }
-
-	 private HBox addToolBar( MediaPlayer mediaPlayer)
-	 {
-		 HBox toolBar = new HBox();
-		 toolBar.setPadding(new Insets(20));
-		 toolBar.setAlignment(Pos.CENTER);
-		 toolBar.alignmentProperty().isBound();
-		 toolBar.setSpacing(5);
-
-		 Image playButtonImage = new Image(getClass().getResourceAsStream("Play.png"));
-		 Button playButton = new Button();
-		 playButton.setGraphic(new ImageView(playButtonImage));
-		 playButton.setStyle("-fx-background-color: Black");
-
-		 playButton.setOnAction((ActionEvent e) ->
-		 {
-			 mediaPlayer.play();
-		 });
-		 playButton.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) ->
-		 {
-			 playButton.setStyle("-fx-background-color: Black");
-			 playButton.setStyle("-fx-body-color: Black");
-		 });
-		 playButton.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent e) ->
-		 {
-			 playButton.setStyle("-fx-background-color: Black");
-		 });
-
-		 Image pausedButtonImage = new Image(getClass().getResourceAsStream("Pause.png"));
-		 Button pauseButton = new Button();
-		 pauseButton.setGraphic(new ImageView(pausedButtonImage));
-		 pauseButton.setStyle("-fx-background-color: Black");
-
-		 pauseButton.setOnAction((ActionEvent e) ->
-		 {
-			 mediaPlayer.pause();
-		 });
-
-		 pauseButton.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) ->
-		 {
-			 pauseButton.setStyle("-fx-background-color: Black");
-			 pauseButton.setStyle("-fx-body-color: Black");
-		 });
-		 pauseButton.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent e) ->
-		 {
-			 pauseButton.setStyle("-fx-background-color: Black");
-		 });
+		//показывать слайдшоу на экране
+		files = project.getContent();
+		for(int i = 0; i < files.size(); i++)
+		{
+			File file = files.get(i).getFile();
+			String filename = file.getAbsolutePath();
+			filename = filename.replace("\\", "/");
+			Media media = new Media(new File(filename).toURI().toString());
+			MediaPlayer mediaPlayer = new MediaPlayer(media);
+			MediaView mediaView = new MediaView(mediaPlayer);
+			mediaView.setMediaPlayer(mediaPlayer);
+			player.setCenter(mediaView);
+			player.setBottom(addToolBar(mediaPlayer));
+		}
+	}
 
 
-		 toolBar.getChildren().addAll(playButton, pauseButton);
-		 return toolBar;
+	public void alertWindowError(String str)
+	{
+		Alert alert = new Alert(Alert.AlertType.ERROR);
+		Toolkit.getDefaultToolkit().beep();
+		alert.setContentText(str);
+		alert.showAndWait();
+	}
+
+	private HBox addToolBar( MediaPlayer mediaPlayer)
+	{
+		HBox toolBar = new HBox();
+		toolBar.setPadding(new Insets(20));
+		toolBar.setAlignment(Pos.CENTER);
+		toolBar.alignmentProperty().isBound();
+		toolBar.setSpacing(5);
+
+		Image playButtonImage = new Image(getClass().getResourceAsStream("Play.png"));
+		Button playButton = new Button();
+		playButton.setGraphic(new ImageView(playButtonImage));
+		playButton.setStyle("-fx-background-color: Black");
+
+		playButton.setOnAction((ActionEvent e) ->
+		{
+			mediaPlayer.play();
+		});
+		playButton.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) ->
+		{
+			playButton.setStyle("-fx-background-color: Black");
+			playButton.setStyle("-fx-body-color: Black");
+		});
+		playButton.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent e) ->
+		{
+			playButton.setStyle("-fx-background-color: Black");
+		});
+
+		Image pausedButtonImage = new Image(getClass().getResourceAsStream("Pause.png"));
+		Button pauseButton = new Button();
+		pauseButton.setGraphic(new ImageView(pausedButtonImage));
+		pauseButton.setStyle("-fx-background-color: Black");
+
+		pauseButton.setOnAction((ActionEvent e) ->
+		{
+			mediaPlayer.pause();
+		});
+
+		pauseButton.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) ->
+		{
+			pauseButton.setStyle("-fx-background-color: Black");
+			pauseButton.setStyle("-fx-body-color: Black");
+		});
+		pauseButton.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent e) ->
+		{
+			pauseButton.setStyle("-fx-background-color: Black");
+		});
+
+
+		toolBar.getChildren().addAll(playButton, pauseButton);
+		return toolBar;
+	}
+
+	private void swapBorderPaneForAudio(int first, int second){
+		BorderPane borderPaneFirst = new BorderPane();
+		BorderPane borderPaneSecond = new BorderPane();
+
+		borderPaneFirst.setCenter(borderPanesAudio.get(second).getCenter());
+		borderPaneSecond.setCenter(borderPanesAudio.get(first).getCenter());
+
+		borderPaneFirst.setPrefWidth(borderPanesAudio.get(second).getPrefWidth());
+		borderPaneFirst.setPrefHeight(borderPanesAudio.get(second).getPrefHeight());
+
+		borderPaneSecond.setPrefWidth(borderPanesAudio.get(first).getPrefWidth());
+		borderPaneSecond.setPrefHeight(borderPanesAudio.get(first).getPrefHeight());
+
+		borderPaneFirst.setId("" + first);
+		borderPaneSecond.setId("" + second);
+
+		borderPanesAudio.set(first, borderPaneFirst);
+		borderPanesAudio.set(second, borderPaneSecond);
 	}
 
 	private void swapBorderPaneForPreview(int first, int second){
@@ -560,6 +649,14 @@ public class Controller
 
 		for(int i = number; i < border_pane_for_preview.size(); ++i){
 			border_pane_for_preview.get(i).setId("" + i);
+		}
+	}
+
+	private void removeElementInBorderPaneForAudio(int number){
+		borderPanesAudio.remove(number);
+
+		for(int i = number; i < borderPanesAudio.size(); ++i){
+			borderPanesAudio.get(i).setId("" + i);
 		}
 	}
 }
