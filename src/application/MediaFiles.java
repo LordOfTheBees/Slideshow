@@ -11,4 +11,5 @@ abstract class MediaFiles
 	abstract boolean isImage();
 	abstract File getFile();
 	abstract BufferedImage getPreview() throws FrameGrabber.Exception;
+	abstract File getMP4();
 }

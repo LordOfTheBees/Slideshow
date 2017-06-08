@@ -1,5 +1,6 @@
 package application;
 
+import org.bytedeco.javacv.CanvasFrame;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -40,6 +41,12 @@ public class Video extends MediaFiles {
 			e.printStackTrace();
 		}
 		return new BufferedImage(60,60,BufferedImage.TYPE_3BYTE_BGR);
+	}
+
+	public File getMP4(){
+		//if(video == null)
+			//throw new Exception("Video::getMP4: video file doesn't exist");
+		return video;
 	}
 }
 

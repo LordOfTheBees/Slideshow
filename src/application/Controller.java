@@ -58,10 +58,12 @@ public class Controller
 
 	@FXML private ArrayList<ImageView> preview_image = new ArrayList<ImageView>();
 	@FXML private ArrayList<BorderPane> border_pane_for_preview = new ArrayList<BorderPane>();
-	 private Project project = new Project();
-	 private int active_element = -1;
-	 private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
-	 private ArrayList<Music> musicFiles  = new ArrayList<Music>();
+	@FXML private ArrayList<BorderPane> borderPanesAudio = new ArrayList<BorderPane>();
+	private Project project = new Project();
+	private int activeMediaElement = -1;
+	private int activeAudioElement = -1;
+	private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	private ArrayList<Music> musicFiles  = new ArrayList<Music>();
 
 	 @FXML
 	    public void initialize()
@@ -79,6 +81,7 @@ public class Controller
 			    	project.loadImage(file);
 
 					files = project.getContent();
+					//files.get(files.size() - 1).getMP4();
 
 					ImageView imageView = new ImageView();
 					imageView.setFitHeight(50);
@@ -124,6 +127,8 @@ public class Controller
 
 					MediaControl med = new MediaControl(mediaPlayer, borderPane);
 
+					borderPane.setId("" + borderPanesAudio.size());
+					borderPanesAudio.add(borderPane);
 					musicBox.getChildren().addAll(borderPane);
 			    }
 		});
@@ -245,56 +250,76 @@ public class Controller
 
 		 leftMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
 		 {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-					if(active_element <= 0){
-						return;
-					}
+			 @Override
+			 public void handle(MouseEvent e)
+			 {
+				 if((activeMediaElement > 0) && (activeMediaElement < preview_image.size())){
+					 int first = activeMediaElement - 1;
+					 int second = activeMediaElement;
 
-					int first = active_element - 1;
-					int second = active_element;
+					 //swap
+					 swapPreviewImageView(first, second);
+					 swapBorderPaneForPreview(first, second);
+					 project.swap(first, second);
+					 files = project.getContent();
 
-					//swap
-					swapPreviewImageView(first, second);
-					swapBorderPaneForPreview(first, second);
-					project.swap(first, second);
-					files = project.getContent();
+					 videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
+					 videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
 
-					videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
-					videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
+					 border_pane_for_preview.get(first).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-					border_pane_for_preview.get(first).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+					 activeMediaElement = activeMediaElement - 1;
+				 } else if((activeAudioElement > 0) && (activeAudioElement < borderPanesAudio.size())){
+					 int first = activeAudioElement - 1;
+					 int second = activeAudioElement;
 
-					active_element = active_element - 1;
-	            }
+					 swapBorderPaneForAudio(first, second);
+
+					 musicBox.getChildren().set(first + 1, borderPanesAudio.get(first));
+					 musicBox.getChildren().set(second + 1, borderPanesAudio.get(second));
+
+					 borderPanesAudio.get(first).setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					 activeAudioElement = activeAudioElement - 1;
+				 }
+			 }
 	        });
 
 		 rightMoveObject.setOnMousePressed(new EventHandler<MouseEvent>()
 		 {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-					if(active_element == preview_image.size() - 1){
-						return;
-					}
+			 @Override
+			 public void handle(MouseEvent e)
+			 {
+				 if((activeMediaElement >= 0) && (activeMediaElement < preview_image.size() - 1)){
+					 int first = activeMediaElement;
+					 int second = activeMediaElement + 1;
 
-					int first = active_element;
-					int second = active_element + 1;
+					 //swap
+					 swapPreviewImageView(first, second);
+					 swapBorderPaneForPreview(first, second);
+					 project.swap(first, second);
+					 files = project.getContent();
 
-					//swap
-					swapPreviewImageView(first, second);
-					swapBorderPaneForPreview(first, second);
-					project.swap(first, second);
-					files = project.getContent();
+					 videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
+					 videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
 
-					videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
-					videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
+					 border_pane_for_preview.get(second).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-					border_pane_for_preview.get(second).setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+					 activeMediaElement = activeMediaElement + 1;
+				 } else if((activeAudioElement >= 0) && (activeAudioElement < borderPanesAudio.size() - 1)){
+					 int first = activeAudioElement;
+					 int second = activeAudioElement + 1;
 
-					active_element = active_element + 1;
-	            }
+					 swapBorderPaneForAudio(first, second);
+
+					 musicBox.getChildren().set(first + 1, borderPanesAudio.get(first));
+					 musicBox.getChildren().set(second + 1, borderPanesAudio.get(second));
+
+					 borderPanesAudio.get(second).setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+
+					 activeAudioElement = activeAudioElement + 1;
+				 }
+			 }
 	        });
 
 		 setTime.setOnMousePressed(new EventHandler<MouseEvent>()
@@ -315,7 +340,7 @@ public class Controller
 	            		toText.clear();
 	            		String from = fromText.getText();
 	            		String to = toText.getText();
-	            		project.setTime(from, to, active_element);
+	            		project.setTime(from, to, activeMediaElement);
 	            	}
 	            }
 	        }
@@ -325,19 +350,20 @@ public class Controller
 		 {
 			 @Override
 			 public void handle(MouseEvent event) {
-				 if((active_element < 0) ||(active_element >= preview_image.size())) {
-					 return;
+				 if((activeMediaElement >= 0) && (activeMediaElement < preview_image.size())) {
+					 project.remove(activeMediaElement);
+					 removeElementInPreviewImages(activeMediaElement);
+					 removeElementInBorderPaneForPreviewImages(activeMediaElement);
+
+					 videoAndPictureBox.getChildren().remove(activeMediaElement + 1);
+
+					 activeMediaElement = -1;
+
+					 files = project.getContent();
+				 } else if((activeAudioElement >= 0) && (activeAudioElement < borderPanesAudio.size())){
+					 removeElementInBorderPaneForAudio(activeAudioElement);
+					 musicBox.getChildren().remove(activeAudioElement + 1);
 				 }
-
-				 project.remove(active_element);
-				 removeElementInPreviewImages(active_element);
-				 removeElementInBorderPaneForPreviewImages(active_element);
-
-				 videoAndPictureBox.getChildren().remove(active_element + 1);
-
-				 active_element = -1;
-
-				 files = project.getContent();
 			 }
 		 });
 
@@ -356,35 +382,80 @@ public class Controller
 						 @Override
 						 public void handle(MouseEvent event)
 						 {
-						 	int tmpInt = Integer.parseInt(tmp_image.getId());
-						 	if(active_element == tmpInt)
-						 	{
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
-								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-								active_element = -1;
-							}
-						 	else if(active_element != -1)
-						 	{
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
-								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+							 if(activeAudioElement != -1){
+								 borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								 activeAudioElement = -1;
+							 }
+							 int tmpInt = Integer.parseInt(tmp_image.getId());
+							 if(activeMediaElement == tmpInt)
+							 {
+								 BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
+								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								 activeMediaElement = -1;
+							 }
+							 else if(activeMediaElement != -1)
+							 {
+								 BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
+								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-								active_element = tmpInt;
-								tmpBorderPane = border_pane_for_preview.get(active_element);
-								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-							}
-						 	else
-						 	{
-								active_element = Integer.parseInt(tmp_image.getId());
+								 activeMediaElement = tmpInt;
+								 tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
+								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+							 }
+							 else
+							 {
+								 activeMediaElement = Integer.parseInt(tmp_image.getId());
 
-								BorderPane tmpBorderPane = border_pane_for_preview.get(active_element);
-								tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
-								//TODO отрисовка рамки
-							}
+								 BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
+								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
+								 //TODO ????????? ?????
+							 }
 						 }
 					 });
 				 }
 			 }
 		 });
+
+			musicBox.setOnMouseClicked(new EventHandler<MouseEvent>()
+			{
+				@Override
+				public void handle(MouseEvent event) {
+					for(int i = 0; i < borderPanesAudio.size(); ++i){
+						BorderPane borderPane = borderPanesAudio.get(i);
+
+						borderPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+							@Override
+							public void handle(MouseEvent event) {
+								if(activeMediaElement != -1){
+									border_pane_for_preview.get(activeMediaElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+									activeMediaElement = -1;
+								}
+								int tmpInt = Integer.parseInt(borderPane.getId());
+								if(activeAudioElement == tmpInt)
+								{
+									borderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+									activeAudioElement = -1;
+								}
+								else if(activeAudioElement != -1)
+								{
+									borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+
+									activeAudioElement = tmpInt;
+									borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+								}
+								else
+								{
+									activeAudioElement = tmpInt;
+
+									borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+									//TODO ????????? ?????
+								}
+							}
+						});
+					}
+				}
+			});
+
 		 player.setStyle("-fx-background-color: #bfc2c7;");
 		playButton.setOnMousePressed(new EventHandler<MouseEvent>()
 		 {
@@ -485,6 +556,28 @@ public class Controller
 		 return toolBar;
 	}
 
+	private void swapBorderPaneForAudio(int first, int second){
+		BorderPane borderPaneFirst = new BorderPane();
+		BorderPane borderPaneSecond = new BorderPane();
+
+		borderPaneFirst.setCenter(borderPanesAudio.get(second).getCenter());
+		borderPaneSecond.setCenter(borderPanesAudio.get(first).getCenter());
+
+		borderPaneFirst.setBottom(borderPanesAudio.get(second).getBottom());
+		borderPaneSecond.setBottom(borderPanesAudio.get(first).getBottom());
+		//borderPaneFirst.setPrefWidth(borderPanesAudio.get(second).getPrefWidth());
+		//borderPaneFirst.setPrefHeight(borderPanesAudio.get(second).getPrefHeight());
+
+		//borderPaneSecond.setPrefWidth(borderPanesAudio.get(first).getPrefWidth());
+		//borderPaneSecond.setPrefHeight(borderPanesAudio.get(first).getPrefHeight());
+
+		borderPaneFirst.setId("" + first);
+		borderPaneSecond.setId("" + second);
+
+		borderPanesAudio.set(first, borderPaneFirst);
+		borderPanesAudio.set(second, borderPaneSecond);
+	}
+
 	private void swapBorderPaneForPreview(int first, int second){
 		BorderPane borderPaneFirst = new BorderPane();
 		BorderPane borderPaneSecond = new BorderPane();
@@ -531,6 +624,14 @@ public class Controller
 
 		for(int i = number; i < border_pane_for_preview.size(); ++i){
 			border_pane_for_preview.get(i).setId("" + i);
+		}
+	}
+
+	private void removeElementInBorderPaneForAudio(int number){
+		borderPanesAudio.remove(number);
+
+		for(int i = number; i < borderPanesAudio.size(); ++i){
+			borderPanesAudio.get(i).setId("" + i);
 		}
 	}
 }
