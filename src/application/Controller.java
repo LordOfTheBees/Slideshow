@@ -1,6 +1,10 @@
 package application;
 
 import java.awt.Toolkit;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -43,7 +47,7 @@ import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
 {
-	 @FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton;
+	 @FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton, playButton;
 	 @FXML private HBox musicBox, videoAndPictureBox;
 	 @FXML private TextField fromText, toText;
 	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
@@ -173,7 +177,8 @@ public class Controller
 
 	                FileInputStream fis = null;
 	                File file = null;
-	                ObjectInputStream in = null;
+
+	                XMLDecoder decoder=null;
 
 	                //десериализация
 	                try
@@ -181,13 +186,15 @@ public class Controller
 	                	file = fileChooser.showOpenDialog(new Stage());
 	                	String filename = file.getAbsolutePath();
 	                	fis = new FileInputStream(filename);
-	                    in = new ObjectInputStream(fis);
-
+	                    decoder=new XMLDecoder(new BufferedInputStream(fis));
 	                }
 	                catch(IOException ex)
 	                {
 	                	alertWindowError("Input error");
 	                }
+
+	            	Project project=(Project)decoder.readObject();
+
 			    }
 		});
 
@@ -200,18 +207,19 @@ public class Controller
 	            	File file = null;
 
 	                FileOutputStream fos = null;
-	                ObjectOutputStream out = null;
-
+	                XMLEncoder encoder = null;
 	                //сериализация
+
 	                try
 	                {
 	                 	file = fileChooser.showSaveDialog(new Stage());
 	                	String filename = file.getAbsolutePath();
 
 	                    fos = new FileOutputStream(filename);
-	                    out = new ObjectOutputStream(fos);
+	                    encoder=new XMLEncoder(new BufferedOutputStream(fos));
 
-	                    out.close();
+	                    encoder.writeObject(project);
+	            		encoder.close();
 	                 }
 	                 catch(IOException ex)
 	                {
@@ -377,33 +385,43 @@ public class Controller
 				 }
 			 }
 		 });
+		 player.setStyle("-fx-background-color: #bfc2c7;");
+		playButton.setOnMousePressed(new EventHandler<MouseEvent>()
+		 {
+	    		@Override
+	            public void handle(MouseEvent e)
+	            {
+	    			files = project.getContent();
+	    			//for(int i = 0; i < files.size(); i++)
+	    			//{
 
-		 System.out.print(45);
-   
+	    		 	if(files.size() != 0)
+	    		 	{
+	    		 		File file = files.get(0).getFile();
+	    				String filename;
+	    				filename = file.getAbsolutePath();
+	    				//filename = filename.replace("\\", "/");
+	    				Media media = new Media(new File(filename).toURI().toString());
+	    				MediaPlayer mediaPlayer = new MediaPlayer(media);
+	    				MediaView mediaView = new MediaView(mediaPlayer);
+	    				//mediaView.setMediaPlayer(mediaPlayer);
+	    				Pane mvPane = new Pane() {  };
+	    				mvPane.setStyle("-fx-background-color: black;");
+	    			    mvPane.getChildren().add(mediaView);
+	    				player.setCenter(mvPane);
+	    				//MediaControl mkl = new MediaControl(mediaPlayer, player);
+	    				//player.setBottom(addToolBar(mediaPlayer));
+	    		 	}
+	            }
+	        });
+
+
 		 //показывать слайдшоу на экране
-		 	files = project.getContent();
-			//for(int i = 0; i < files.size(); i++)
-			//{
-		 	player.setStyle("-fx-background-color: #bfc2c7;");
-		 	if(files.size() != 0)
-		 	{	
-		 		File file = files.get(0).getFile();
-				String filename = file.getAbsolutePath();
-				filename = filename.replace("\\", "/");
-				Media media = new Media(new File(filename).toURI().toString());
-				MediaPlayer mediaPlayer = new MediaPlayer(media);
-				MediaView mediaView = new MediaView(mediaPlayer);
-				//mediaView.setMediaPlayer(mediaPlayer);
-				Pane mvPane = new Pane() {  };
-				mvPane.setStyle("-fx-background-color: black;"); 
-			    mvPane.getChildren().add(mediaView);
-				player.setCenter(mvPane);
-				//MediaControl mkl = new MediaControl(mediaPlayer, player);
-				//player.setBottom(addToolBar(mediaPlayer));
-		 	}	
+
+
 			//}
 			//MediaControl mkl = new MediaControl(mediaPlayer, player);
-			 
+
 	    }
 
 
