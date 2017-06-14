@@ -630,10 +630,9 @@ public class Controller
 			Media media = new Media(new File(filePath).toURI().toString());
 			MediaPlayer mediaPlayer = new MediaPlayer(media);
 			MediaView mediaView = new MediaView(mediaPlayer);
-			Pane mvPane = new Pane() {  };
-			mvPane.setStyle("-fx-background-color: black;");
-			mvPane.getChildren().add(mediaView);
-			player.setCenter(mvPane);
+			mediaView.setFitWidth(player.getPrefWidth());
+			mediaView.setFitHeight(player.getPrefHeight());
+			player.setCenter(mediaView);
 		}
 	}
 }

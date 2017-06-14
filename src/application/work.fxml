@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
@@ -13,10 +11,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="683.0" prefWidth="764.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
+<AnchorPane minHeight="600.0" minWidth="700.0" prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
       <MenuBar layoutX="101.0" layoutY="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -38,9 +35,61 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Pane layoutY="14.0" prefHeight="658.0" prefWidth="827.0">
+      <VBox layoutX="247.0" layoutY="32.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="32.0">
          <children>
-            <VBox layoutY="396.0" prefHeight="274.0" prefWidth="909.0">
+            <HBox prefHeight="321.0" prefWidth="764.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox prefHeight="321.0" prefWidth="170.0" HBox.hgrow="NEVER">
+                     <children>
+                        <Hyperlink fx:id="importPicture" text="Import pictures">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Hyperlink>
+                        <Hyperlink fx:id="importAudio" prefHeight="29.0" prefWidth="104.0" text="Import audio">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
+                        </Hyperlink>
+                        <Hyperlink fx:id="importVideo" text="Import video">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </VBox.margin>
+                        </Hyperlink>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <BorderPane fx:id="player" prefHeight="338.0" prefWidth="500.0" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </BorderPane>
+                        <HBox prefHeight="25.0" prefWidth="578.0">
+                           <children>
+                              <Button fx:id="playButton" mnemonicParsing="false" text="Play">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="10.0" top="5.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <AnchorPane prefHeight="46.0" prefWidth="764.0" VBox.vgrow="NEVER">
+               <children>
+                  <Button fx:id="setTime" layoutY="8.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="8.0" />
+                  <TextField fx:id="fromText" layoutX="109.0" layoutY="8.0" prefWidth="50.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="109.0" AnchorPane.topAnchor="8.0" />
+                  <Label layoutX="167.0" layoutY="13.0" text="-" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="167.0" AnchorPane.topAnchor="13.0" />
+                  <TextField fx:id="toText" layoutX="181.0" layoutY="8.0" prefWidth="50.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="181.0" AnchorPane.topAnchor="8.0" />
+                  <Button fx:id="leftMoveObject" layoutX="294.0" layoutY="8.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="294.0" AnchorPane.topAnchor="8.0" />
+                  <Button fx:id="rightMoveObject" layoutX="352.0" layoutY="8.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="8.0" />
+                  <Button fx:id="deleteButton" layoutX="428.0" layoutY="8.0" mnemonicParsing="false" text="Delete Element" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="450.0" AnchorPane.topAnchor="8.0" />
+               </children>
+            </AnchorPane>
+            <VBox prefHeight="125.0" prefWidth="748.0">
                <children>
                   <HBox fx:id="videoAndPictureBox" prefHeight="60.0" prefWidth="200.0">
                      <children>
@@ -62,20 +111,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Label layoutX="183.0" layoutY="365.0" text="-" />
-            <TextField fx:id="toText" layoutX="202.0" layoutY="361.0" prefWidth="50.0" />
-            <TextField fx:id="fromText" layoutX="124.0" layoutY="361.0" prefWidth="50.0" />
-            <Button fx:id="rightMoveObject" layoutX="359.0" layoutY="358.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="-&gt;" />
-            <Button fx:id="leftMoveObject" layoutX="298.0" layoutY="358.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="39.0" text="&lt;-" />
-            <Button fx:id="setTime" layoutX="14.0" layoutY="358.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="78.0" text="Set Time" />
-            <Hyperlink fx:id="importPicture" layoutX="8.0" layoutY="38.0" text="Import pictures" />
-            <Hyperlink fx:id="importAudio" layoutX="13.0" layoutY="73.0" prefHeight="23.0" prefWidth="78.0" text="Import audio" />
-            <Hyperlink fx:id="importVideo" layoutX="14.0" layoutY="111.0" text="Import video" />
-            <BorderPane fx:id="player" layoutX="304.0" layoutY="13.0" prefHeight="338.0" prefWidth="500.0" />
-            <Button fx:id="deleteButton" layoutX="431.0" layoutY="358.0" mnemonicParsing="false" text="Delete Element" />
-            <Button layoutX="123.0" layoutY="277.0" mnemonicParsing="false" text="Button" />
-            <Button fx:id="playButton" layoutX="134.0" layoutY="182.0" mnemonicParsing="false" text="Play" />
          </children>
-      </Pane>
+      </VBox>
    </children>
 </AnchorPane>
