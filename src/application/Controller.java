@@ -68,6 +68,7 @@ public class Controller
 	private int selectedElementForMediaPlay = -1;
 
 	//*================
+	private boolean projectIsPlaying = false;
 	private Media video = null;
 	private MediaPlayer videoPlayer = null;
 	private MediaView videoView = null;
@@ -468,6 +469,16 @@ public class Controller
 		 buttonPlayAllItems.setOnMousePressed(new EventHandler<MouseEvent>() {
 			 @Override
 			 public void handle(MouseEvent event) {
+			 	if(projectIsPlaying){
+			 		videoPlayer.stop();
+			 		audioPlayer.stop();
+
+			 		player.getChildren().clear();
+			 		projectIsPlaying = false;
+			 		return;
+				}
+
+				projectIsPlaying = true;
 				 mediaFiles = project.getMediaContent();
 				 musicFiles = project.getAudioContent();
 
@@ -684,7 +695,15 @@ public class Controller
 
 
 	private void drawPreview(){
-		if(playerIsOn){
+		if(projectIsPlaying){
+			videoPlayer.stop();
+			audioPlayer.stop();
+
+			player.getChildren().clear();
+			projectIsPlaying = false;
+		}
+
+		if(player.getChildren().size() != 0){
 			MediaView mediaView = (MediaView)player.getCenter();
 			mediaView.getMediaPlayer().stop();
 			playerIsOn = false;
@@ -698,8 +717,14 @@ public class Controller
 			mediaView.setFitWidth(player.getWidth());
 			mediaView.setFitHeight(player.getHeight());
 
-			MediaControl med = new MediaControl(mediaPlayer, player);
-			player.setCenter(mediaView);
+			player.getChildren().clear();
+
+			if(mediaFiles.get(activeMediaElement).isImage()){
+				player.setCenter(mediaView);
+			} else {
+				MediaControl med = new MediaControl(mediaPlayer, player);
+				player.setCenter(mediaView);
+			}
 		}
 		else{
 			player.getChildren().clear();
