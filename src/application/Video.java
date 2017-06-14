@@ -28,7 +28,7 @@ public class Video extends MediaFiles {
 		String filepath;
 		filepath = video.getAbsolutePath();
 		FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber(filepath);
-		frameGrabber.setFormat(filepath.substring(filepath.indexOf('.') + 1));
+		frameGrabber.setFormat(filepath.substring(filepath.lastIndexOf('.') + 1));
 		frameGrabber.start();
 		Java2DFrameConverter converter = new Java2DFrameConverter();
 		try {

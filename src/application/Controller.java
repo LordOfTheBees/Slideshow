@@ -399,13 +399,14 @@ public class Controller
 								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
 								 activeMediaElement = tmpInt;
+								 drawPreview();
 								 tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 							 }
 							 else
 							 {
 								 activeMediaElement = Integer.parseInt(tmp_image.getId());
-
+								 drawPreview();
 								 BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)));
 								 //TODO ????????? ?????
@@ -416,45 +417,39 @@ public class Controller
 			 }
 		 });
 
-			musicBox.setOnMouseClicked(new EventHandler<MouseEvent>()
-			{
-				@Override
-				public void handle(MouseEvent event) {
-					for(int i = 0; i < borderPanesAudio.size(); ++i){
-						BorderPane borderPane = borderPanesAudio.get(i);
+		 musicBox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			 @Override
+			 public void handle(MouseEvent event) {
+				 for (int i = 0; i < borderPanesAudio.size(); ++i) {
+					 BorderPane borderPane = borderPanesAudio.get(i);
 
-						borderPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent event) {
-								if(activeMediaElement != -1){
-									border_pane_for_preview.get(activeMediaElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-									activeMediaElement = -1;
-								}
-								int tmpInt = Integer.parseInt(borderPane.getId());
-								if(activeAudioElement == tmpInt)
-								{
-									borderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-									activeAudioElement = -1;
-								}
-								else if(activeAudioElement != -1)
-								{
-									borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+					 borderPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
+						 @Override
+						 public void handle(MouseEvent event) {
+							 if (activeMediaElement != -1) {
+								 border_pane_for_preview.get(activeMediaElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								 activeMediaElement = -1;
+							 }
+							 int tmpInt = Integer.parseInt(borderPane.getId());
+							 if (activeAudioElement == tmpInt) {
+								 borderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								 activeAudioElement = -1;
+							 } else if (activeAudioElement != -1) {
+								 borderPanesAudio.get(activeAudioElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 
-									activeAudioElement = tmpInt;
-									borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
-								}
-								else
-								{
-									activeAudioElement = tmpInt;
+								 activeAudioElement = tmpInt;
+								 borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+							 } else {
+								 activeAudioElement = tmpInt;
 
-									borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
-									//TODO ????????? ?????
-								}
-							}
-						});
-					}
-				}
-			});
+								 borderPane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
+								 //TODO ????????? ?????
+							 }
+						 }
+					 });
+				 }
+			 }
+		 });
 
 		 player.setStyle("-fx-background-color: #bfc2c7;");
 		playButton.setOnMousePressed(new EventHandler<MouseEvent>()
@@ -463,9 +458,6 @@ public class Controller
 	            public void handle(MouseEvent e)
 	            {
 	    			files = project.getContent();
-	    			//for(int i = 0; i < files.size(); i++)
-	    			//{
-
 	    		 	if(files.size() != 0)
 	    		 	{
 	    		 		File file = files.get(0).getFile();
@@ -565,11 +557,6 @@ public class Controller
 
 		borderPaneFirst.setBottom(borderPanesAudio.get(second).getBottom());
 		borderPaneSecond.setBottom(borderPanesAudio.get(first).getBottom());
-		//borderPaneFirst.setPrefWidth(borderPanesAudio.get(second).getPrefWidth());
-		//borderPaneFirst.setPrefHeight(borderPanesAudio.get(second).getPrefHeight());
-
-		//borderPaneSecond.setPrefWidth(borderPanesAudio.get(first).getPrefWidth());
-		//borderPaneSecond.setPrefHeight(borderPanesAudio.get(first).getPrefHeight());
 
 		borderPaneFirst.setId("" + first);
 		borderPaneSecond.setId("" + second);
@@ -632,6 +619,21 @@ public class Controller
 
 		for(int i = number; i < borderPanesAudio.size(); ++i){
 			borderPanesAudio.get(i).setId("" + i);
+		}
+	}
+
+
+	private void drawPreview(){
+		files = project.getContent();
+		if(activeMediaElement >= 0){
+			String filePath = files.get(activeMediaElement).getMP4().getAbsolutePath();
+			Media media = new Media(new File(filePath).toURI().toString());
+			MediaPlayer mediaPlayer = new MediaPlayer(media);
+			MediaView mediaView = new MediaView(mediaPlayer);
+			Pane mvPane = new Pane() {  };
+			mvPane.setStyle("-fx-background-color: black;");
+			mvPane.getChildren().add(mediaView);
+			player.setCenter(mvPane);
 		}
 	}
 }
