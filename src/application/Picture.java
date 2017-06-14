@@ -21,6 +21,8 @@ import static org.bytedeco.javacpp.avutil.AV_PIX_FMT_YUV420P;
 public class Picture extends MediaFiles
 {
 	File picture = null;
+	int duration = 1;//in seconds
+	int pref_duration = 1;
 
 	public void loadFile(File file)
 
@@ -75,7 +77,11 @@ public class Picture extends MediaFiles
 		fileName = fileName.substring(0, fileName.lastIndexOf('.')) + ".mp4";
 		File file = new File(fileName);
 		if(file.exists())
-			return file;
+			if(duration == pref_duration)
+				return file;
+
+		file.delete();
+		pref_duration = duration;
 		//https://stackoverflow.com/questions/28721396/convert-images-to-video-in-android
 		try {
 			BufferedImage image = ImageIO.read(picture);
@@ -99,7 +105,7 @@ public class Picture extends MediaFiles
 
 			Frame frame=null;
 			frame = new Java2DFrameConverter().convert(image);
-			for (int i=0;i< 10 * recorder.getFrameRate();i++) {
+			for (int i=0;i< duration * recorder.getFrameRate();i++) {
 				recorder.record(frame);
 			}
 			recorder.stop();
@@ -112,8 +118,7 @@ public class Picture extends MediaFiles
 
 	}
 
-	public void setTime(String from, String to)
-	{
-
+	public void setTime(int seconds) {
+		duration = seconds;
 	}
 }

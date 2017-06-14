@@ -47,9 +47,9 @@ import javafx.embed.swing.SwingFXUtils;
 
 public class Controller
 {
-	 @FXML private Button leftMoveObject, rightMoveObject, setTime, deleteButton, playButton;
+	 @FXML private Button leftMoveObject, rightMoveObject, setDuration, deleteButton, buttonPlayAllItems;
 	 @FXML private HBox musicBox, videoAndPictureBox;
-	 @FXML private TextField fromText, toText;
+	 @FXML private TextField timeText;
 	 @FXML private MenuItem openProject, saveProject, addNewProject, deleteElement, aboutMenu;
 	 @FXML private Hyperlink importPicture;
 	 @FXML private Hyperlink importVideo;
@@ -62,9 +62,24 @@ public class Controller
 	private Project project = new Project();
 	private int activeMediaElement = -1;
 	private int activeAudioElement = -1;
-	private ArrayList<MediaFiles> files  = new ArrayList<MediaFiles>();
+	private ArrayList<MediaFiles> mediaFiles  = new ArrayList<MediaFiles>();
 	private ArrayList<Music> musicFiles  = new ArrayList<Music>();
+	private boolean playerIsOn = false;
+	private int selectedElementForMediaPlay = -1;
 
+	//*================
+	private Media video = null;
+	private MediaPlayer videoPlayer = null;
+	private MediaView videoView = null;
+
+	private Media audio = null;
+	private MediaPlayer audioPlayer = null;
+	private MediaView audioView = null;
+
+	private int maxSizeFiles = -1;
+	private int audioElementPlayed = -1;
+	private int videoElementPlayed = -1;
+	private String filePath;
 	 @FXML
 	    public void initialize()
 	    {
@@ -80,7 +95,7 @@ public class Controller
 			    	file = fileChooser.showOpenDialog(new Stage());
 			    	project.loadImage(file);
 
-					files = project.getContent();
+					mediaFiles = project.getMediaContent();
 					//files.get(files.size() - 1).getMP4();
 
 					ImageView imageView = new ImageView();
@@ -151,10 +166,10 @@ public class Controller
 						imageView.setFitWidth(50);
 						imageView.setId("" + preview_image.size());
 
-						files = project.getContent();
+						mediaFiles = project.getMediaContent();
 
 						WritableImage tmp_image = new WritableImage(50, 50);
-						tmp_image = SwingFXUtils.toFXImage(files.get(files.size() - 1).getPreview(), tmp_image);
+						tmp_image = SwingFXUtils.toFXImage(mediaFiles.get(mediaFiles.size() - 1).getPreview(), tmp_image);
 						imageView.setImage(tmp_image);
 
 						BorderPane borderPane = new BorderPane();
@@ -261,7 +276,7 @@ public class Controller
 					 swapPreviewImageView(first, second);
 					 swapBorderPaneForPreview(first, second);
 					 project.swap(first, second);
-					 files = project.getContent();
+					 mediaFiles = project.getMediaContent();
 
 					 videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
 					 videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
@@ -298,7 +313,7 @@ public class Controller
 					 swapPreviewImageView(first, second);
 					 swapBorderPaneForPreview(first, second);
 					 project.swap(first, second);
-					 files = project.getContent();
+					 mediaFiles = project.getMediaContent();
 
 					 videoAndPictureBox.getChildren().set(first + 1, border_pane_for_preview.get(first));
 					 videoAndPictureBox.getChildren().set(second + 1, border_pane_for_preview.get(second));
@@ -322,26 +337,23 @@ public class Controller
 			 }
 	        });
 
-		 setTime.setOnMousePressed(new EventHandler<MouseEvent>()
+		 setDuration.setOnMousePressed(new EventHandler<MouseEvent>()
 	        {
 
 
 	    		@Override
 	            public void handle(MouseEvent e)
 	            {
-	    			System.out.println("Button clicked");
-	    			if(fromText.getText().isEmpty() && toText.getText().isEmpty())
-	            	{
-	            		Toolkit.getDefaultToolkit().beep();
-	            	}
-	            	else
-	            	{
-	            		fromText.clear();
-	            		toText.clear();
-	            		String from = fromText.getText();
-	            		String to = toText.getText();
-	            		project.setTime(from, to, activeMediaElement);
-	            	}
+					mediaFiles = project.getMediaContent();
+					if((activeMediaElement >= 0) && (activeMediaElement < mediaFiles.size())) {
+
+						if(!mediaFiles.get(activeMediaElement).isImage())
+							return;
+
+						int timeInt = Integer.parseInt(timeText.getText());
+						project.setTime(timeInt, activeMediaElement);
+						drawPreview();
+					}
 	            }
 	        }
 	        );
@@ -359,7 +371,7 @@ public class Controller
 
 					 activeMediaElement = -1;
 
-					 files = project.getContent();
+					 mediaFiles = project.getMediaContent();
 				 } else if((activeAudioElement >= 0) && (activeAudioElement < borderPanesAudio.size())){
 					 removeElementInBorderPaneForAudio(activeAudioElement);
 					 musicBox.getChildren().remove(activeAudioElement + 1);
@@ -392,6 +404,7 @@ public class Controller
 								 BorderPane tmpBorderPane = border_pane_for_preview.get(activeMediaElement);
 								 tmpBorderPane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 								 activeMediaElement = -1;
+								 drawPreview();
 							 }
 							 else if(activeMediaElement != -1)
 							 {
@@ -429,6 +442,7 @@ public class Controller
 							 if (activeMediaElement != -1) {
 								 border_pane_for_preview.get(activeMediaElement).setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
 								 activeMediaElement = -1;
+								 drawPreview();
 							 }
 							 int tmpInt = Integer.parseInt(borderPane.getId());
 							 if (activeAudioElement == tmpInt) {
@@ -451,40 +465,86 @@ public class Controller
 			 }
 		 });
 
-		 player.setStyle("-fx-background-color: #bfc2c7;");
-		playButton.setOnMousePressed(new EventHandler<MouseEvent>()
-		 {
-	    		@Override
-	            public void handle(MouseEvent e)
-	            {
-	    			files = project.getContent();
-	    		 	if(files.size() != 0)
-	    		 	{
-	    		 		File file = files.get(0).getFile();
-	    				String filename;
-	    				filename = file.getAbsolutePath();
-	    				//filename = filename.replace("\\", "/");
-	    				Media media = new Media(new File(filename).toURI().toString());
-	    				MediaPlayer mediaPlayer = new MediaPlayer(media);
-	    				MediaView mediaView = new MediaView(mediaPlayer);
-	    				//mediaView.setMediaPlayer(mediaPlayer);
-	    				Pane mvPane = new Pane() {  };
-	    				mvPane.setStyle("-fx-background-color: black;");
-	    			    mvPane.getChildren().add(mediaView);
-	    				player.setCenter(mvPane);
-	    				//MediaControl mkl = new MediaControl(mediaPlayer, player);
-	    				//player.setBottom(addToolBar(mediaPlayer));
-	    		 	}
-	            }
-	        });
+		 buttonPlayAllItems.setOnMousePressed(new EventHandler<MouseEvent>() {
+			 @Override
+			 public void handle(MouseEvent event) {
+				 mediaFiles = project.getMediaContent();
+				 musicFiles = project.getAudioContent();
+
+				 maxSizeFiles = mediaFiles.size();
+				 if (maxSizeFiles < musicFiles.size())
+					 maxSizeFiles = musicFiles.size();
+
+				 for (int i = 0; i < mediaFiles.size(); ++i) {
+					 mediaFiles.get(i).getMP4();
+				 }
+
+				 if (mediaFiles.size() != 0) {
+					 activeMediaElement = 0;
+
+					 filePath = mediaFiles.get(0).getMP4().getAbsolutePath();
+					 video = new Media(new File(filePath).toURI().toString());
+					 videoPlayer = new MediaPlayer(video);
+					 videoView = new MediaView(videoPlayer);
+					 videoView.setFitWidth(player.getWidth());
+					 videoView.setFitHeight(player.getHeight());
+					 player.getChildren().clear();
+					 player.setCenter(videoView);
+					 videoPlayer.play();
+
+					 videoPlayer.setOnEndOfMedia(new Runnable() {
+						 @Override
+						 public void run() {
+							 activeMediaElement += 1;
+							 if (activeMediaElement == mediaFiles.size()) {
+								 player.getChildren().clear();
+								 return;
+							 }
+							 java.lang.Runnable tmp_data_video = videoPlayer.getOnEndOfMedia();
+							 filePath = mediaFiles.get(activeMediaElement).getMP4().getAbsolutePath();
+							 video = new Media(new File(filePath).toURI().toString());
+							 videoPlayer = new MediaPlayer(video);
+							 videoView = new MediaView(videoPlayer);
+							 videoView.setFitWidth(player.getWidth());
+							 videoView.setFitHeight(player.getHeight());
+							 player.getChildren().clear();
+							 player.setCenter(videoView);
+							 videoPlayer.play();
+
+							 videoPlayer.setOnEndOfMedia(tmp_data_video);
+						 }
+					 });
+				 }
 
 
-		 //показывать слайдшоу на экране
+				 if (musicFiles.size() != 0) {
+					 activeAudioElement = 0;
+					 filePath = musicFiles.get(0).getMusic().getAbsolutePath();
+					 audio = new Media(new File(filePath).toURI().toString());
+					 audioPlayer = new MediaPlayer(audio);
+					 audioView = new MediaView(audioPlayer);
+					 audioPlayer.play();
 
+					 audioPlayer.setOnEndOfMedia(new Runnable() {
+						 @Override
+						 public void run() {
+							 activeAudioElement += 1;
+							 if (activeAudioElement == musicFiles.size()) {
+								 return;
+							 }
+							 java.lang.Runnable tmp_data_audio = audioPlayer.getOnEndOfMedia();
+							 filePath = musicFiles.get(activeAudioElement).getMusic().getAbsolutePath();
+							 audio = new Media(new File(filePath).toURI().toString());
+							 audioPlayer = new MediaPlayer(audio);
+							 audioView = new MediaView(audioPlayer);
+							 audioPlayer.play();
 
-			//}
-			//MediaControl mkl = new MediaControl(mediaPlayer, player);
-
+							 audioPlayer.setOnEndOfMedia(tmp_data_audio);
+						 }
+					 });
+				 }
+			 }
+		 });
 	    }
 
 
@@ -624,15 +684,25 @@ public class Controller
 
 
 	private void drawPreview(){
-		files = project.getContent();
-		if(activeMediaElement >= 0){
-			String filePath = files.get(activeMediaElement).getMP4().getAbsolutePath();
+		if(playerIsOn){
+			MediaView mediaView = (MediaView)player.getCenter();
+			mediaView.getMediaPlayer().stop();
+			playerIsOn = false;
+		}
+		mediaFiles = project.getMediaContent();
+		if((activeMediaElement >= 0) && (activeMediaElement < mediaFiles.size())){
+			String filePath = mediaFiles.get(activeMediaElement).getMP4().getAbsolutePath();
 			Media media = new Media(new File(filePath).toURI().toString());
 			MediaPlayer mediaPlayer = new MediaPlayer(media);
 			MediaView mediaView = new MediaView(mediaPlayer);
-			mediaView.setFitWidth(player.getPrefWidth());
-			mediaView.setFitHeight(player.getPrefHeight());
+			mediaView.setFitWidth(player.getWidth());
+			mediaView.setFitHeight(player.getHeight());
+
+			MediaControl med = new MediaControl(mediaPlayer, player);
 			player.setCenter(mediaView);
+		}
+		else{
+			player.getChildren().clear();
 		}
 	}
 }

@@ -34,18 +34,15 @@ public class Project
 		files.add(picture);
 	}
 
-	public void setTime(String from, String to, int i)
+	public void setTime(int seconds, int i)
 	{
-		//и индекс выделенного объекта передается
-
 		if(files.get(i).isImage())
 		{
-			Picture current_picture  = (Picture)files.get(i);
-			current_picture.setTime(from, to);
+			((Picture)files.get(i)).setTime(seconds) ;
 		}
 	}
 
-	public  ArrayList<MediaFiles> getContent()
+	public  ArrayList<MediaFiles> getMediaContent()
 	{
 		return files;
 	}

@@ -10,5 +10,7 @@ public class Music
 		music = file;
 	}
 
-
+	public File getMusic(){
+		return music;
+	}
 }
